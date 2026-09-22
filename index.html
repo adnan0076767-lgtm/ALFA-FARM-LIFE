@@ -3,32 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#17251a">
-<title>ALFA FARM LIFE V3.0 - REAL FARMING</title>
+<meta name="theme-color" content="#26351f">
+<title>ALFA FARM LIFE V4.0 - REAL LIFE FARMING</title>
 
 <style>
 *{
   box-sizing:border-box;
   margin:0;
   padding:0;
-  -webkit-tap-highlight-color:transparent;
   user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#101710;
-  font-family:Arial,sans-serif;
+  background:#101810;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
-#game{
+canvas{
   position:fixed;
   inset:0;
   width:100%;
   height:100%;
   display:block;
+  image-rendering:auto;
 }
 
 #hud{
@@ -36,251 +38,271 @@ html,body{
   top:10px;
   left:10px;
   right:10px;
+  z-index:10;
   display:flex;
   justify-content:space-between;
   pointer-events:none;
-  z-index:5;
 }
 
-.panel{
-  background:rgba(18,27,19,.9);
-  color:white;
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:14px;
+.hudBox{
+  min-width:175px;
   padding:9px 12px;
-  box-shadow:0 7px 25px rgba(0,0,0,.28);
+  border-radius:14px;
+  color:#fff;
+  background:rgba(21,31,22,.88);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 7px 25px rgba(0,0,0,.25);
+  backdrop-filter:blur(8px);
+  font-size:13px;
+  line-height:1.5;
 }
 
-.bar{
-  width:150px;
+.energy{
+  width:145px;
   height:8px;
-  background:#263326;
-  border-radius:10px;
+  margin-top:4px;
+  background:#253025;
+  border-radius:20px;
   overflow:hidden;
-  margin-top:5px;
 }
 
-#energyBar{
+#energyFill{
   width:100%;
   height:100%;
-  background:#e7c958;
+  background:#e6c84c;
+  transition:.15s;
 }
 
 #message{
   position:fixed;
+  z-index:40;
   left:50%;
-  bottom:125px;
-  transform:translateX(-50%);
-  background:rgba(20,27,20,.95);
-  color:white;
-  border:1px solid rgba(255,255,255,.2);
-  padding:11px 18px;
-  border-radius:14px;
-  z-index:20;
+  bottom:118px;
+  transform:translateX(-50%) translateY(10px);
   opacity:0;
   pointer-events:none;
-  transition:.2s;
   max-width:90%;
+  padding:11px 18px;
+  color:#fff;
+  background:rgba(19,25,19,.95);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  transition:.22s;
   text-align:center;
 }
 
 #message.show{
   opacity:1;
+  transform:translateX(-50%) translateY(0);
 }
 
 #toolbar{
   position:fixed;
-  bottom:13px;
+  z-index:20;
   left:50%;
+  bottom:10px;
   transform:translateX(-50%);
   display:flex;
   gap:7px;
-  padding:8px;
-  background:rgba(15,22,16,.93);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:17px;
-  z-index:8;
-  max-width:96vw;
+  max-width:97vw;
   overflow-x:auto;
+  padding:8px;
+  background:rgba(15,21,16,.94);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  scrollbar-width:none;
+}
+
+#toolbar::-webkit-scrollbar{
+  display:none;
 }
 
 .tool{
-  min-width:64px;
-  height:60px;
+  flex:0 0 auto;
+  min-width:66px;
+  height:61px;
   border:0;
   border-radius:12px;
-  background:#29372a;
+  background:#2a392a;
   color:white;
-  cursor:pointer;
   font-size:10px;
   font-weight:bold;
+  cursor:pointer;
 }
 
-.tool span{
+.toolIcon{
   display:block;
-  font-size:22px;
+  font-size:23px;
   margin-bottom:3px;
 }
 
 .tool.active{
-  background:#668b43;
-  outline:2px solid #e0efa5;
+  background:#638641;
+  outline:2px solid #e1efab;
+  box-shadow:0 0 15px rgba(185,220,110,.25);
 }
 
-#mobile{
-  position:fixed;
-  left:15px;
-  bottom:25px;
-  width:150px;
-  height:150px;
-  z-index:10;
+#mobileControls{
   display:none;
+  position:fixed;
+  z-index:25;
+  left:13px;
+  bottom:26px;
+  width:148px;
+  height:148px;
 }
 
-.d{
+.moveBtn{
   position:absolute;
   width:50px;
   height:50px;
-  border:0;
-  border-radius:13px;
-  background:rgba(24,34,25,.92);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;
+  background:rgba(26,36,27,.92);
   color:#fff;
-  font-size:22px;
+  font-size:21px;
 }
 
-#u{left:50px;top:0}
-#d{left:50px;bottom:0}
-#l{left:0;top:50px}
-#r{right:0;top:50px}
+#up{top:0;left:49px}
+#down{bottom:0;left:49px}
+#left{top:49px;left:0}
+#right{top:49px;right:0}
 
 #action{
+  display:none;
   position:fixed;
+  z-index:25;
   right:20px;
-  bottom:28px;
+  bottom:30px;
   width:78px;
   height:78px;
   border-radius:50%;
-  border:2px solid #dff19d;
-  background:#5b823b;
+  border:2px solid #dff19b;
+  background:#5d843e;
   color:#fff;
-  font-weight:bold;
-  z-index:10;
-  display:none;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 8px 25px rgba(0,0,0,.3);
 }
 
 .overlay{
   position:fixed;
+  z-index:100;
   inset:0;
-  background:rgba(4,8,5,.72);
-  z-index:30;
   display:none;
   align-items:center;
   justify-content:center;
+  background:rgba(3,7,4,.72);
+  backdrop-filter:blur(5px);
 }
 
-.box{
-  width:min(700px,94vw);
-  max-height:85vh;
+.window{
+  width:min(720px,94vw);
+  max-height:87vh;
   overflow:auto;
-  background:#18251a;
+  padding:21px;
   color:#fff;
-  border:1px solid #63785d;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 25px 70px rgba(0,0,0,.5);
+  background:#19251a;
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:21px;
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
 }
 
-.grid{
+.window h2{
+  margin-bottom:6px;
+}
+
+.sub{
+  color:#aebdad;
+  font-size:13px;
+}
+
+.cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
   gap:10px;
-  margin-top:15px;
+  margin-top:16px;
 }
 
 .card{
+  padding:14px;
+  border-radius:14px;
   background:#29382a;
-  border-radius:13px;
-  padding:13px;
+  border:1px solid rgba(255,255,255,.08);
 }
 
 .card button,
-.close{
+.closeBtn{
   width:100%;
   margin-top:9px;
+  padding:11px;
   border:0;
   border-radius:10px;
-  padding:11px;
-  background:#638943;
-  color:white;
+  background:#668b43;
+  color:#fff;
   font-weight:bold;
 }
 
-#seedPicker .seed{
-  background:#29382a;
-  color:white;
+.seedBtn{
   border:0;
-  border-radius:14px;
   padding:15px;
-  font-size:14px;
+  border-radius:14px;
+  background:#29382a;
+  color:#fff;
+  font-weight:bold;
 }
 
 #menu{
   position:fixed;
   inset:0;
-  z-index:50;
+  z-index:200;
   display:flex;
   align-items:center;
   justify-content:center;
-  color:white;
   background:
-    radial-gradient(circle at 50% 15%,rgba(128,180,82,.2),transparent 35%),
-    linear-gradient(#172719,#0a100b);
+    radial-gradient(circle at 50% 18%,rgba(147,188,93,.20),transparent 35%),
+    linear-gradient(#182619,#081008);
+  color:white;
 }
 
-.menu{
-  width:min(650px,92vw);
-  background:rgba(19,29,20,.95);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:25px;
-  padding:35px;
+.menuBox{
+  width:min(670px,92vw);
+  padding:36px;
   text-align:center;
+  border-radius:27px;
+  background:rgba(18,28,19,.95);
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 30px 80px rgba(0,0,0,.45);
 }
 
-.logo{
-  font-size:clamp(36px,8vw,72px);
+.title{
+  font-size:clamp(38px,8vw,75px);
   font-weight:900;
-  color:#dff29b;
   letter-spacing:2px;
+  color:#e1ef9e;
 }
 
-.menu p{
+.menuBox p{
+  color:#b5c2b2;
   margin-top:8px;
-  color:#b8c6b7;
 }
 
-.menu button{
+.menuBtn{
   width:100%;
-  margin-top:12px;
   padding:15px;
+  margin-top:12px;
   border:0;
   border-radius:13px;
-  background:#527d3c;
-  color:#fff;
+  background:#577f3c;
+  color:white;
   font-weight:bold;
   font-size:15px;
 }
 
 @media(max-width:700px){
-  #toolbar{
-    bottom:8px;
-  }
 
-  .tool{
-    min-width:55px;
-    height:54px;
-  }
-
-  #mobile,
+  #mobileControls,
   #action{
     display:block;
   }
@@ -289,12 +311,18 @@ html,body{
     bottom:180px;
   }
 
-  #hud{
-    font-size:11px;
+  #toolbar{
+    left:53%;
+    max-width:65vw;
   }
 
-  .bar{
-    width:105px;
+  .hudBox{
+    min-width:130px;
+    font-size:10px;
+  }
+
+  .energy{
+    width:100px;
   }
 }
 </style>
@@ -305,204 +333,218 @@ html,body{
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div class="panel">
-    👤 <b id="name">RAKA</b><br>
-    💰 Rp <span id="money">1500</span>
-    <div>⚡ Energi</div>
-    <div class="bar"><div id="energyBar"></div></div>
+
+  <div class="hudBox">
+    👨‍🌾 <b>RAKA</b><br>
+    💰 Rp <span id="money">1500</span><br>
+    ⚡ Energi
+    <div class="energy">
+      <div id="energyFill"></div>
+    </div>
   </div>
 
-  <div class="panel" style="text-align:right">
+  <div class="hudBox" style="text-align:right">
     📅 Hari <span id="day">1</span> • <span id="season">Semi</span><br>
     🕐 <span id="time">06:00</span><br>
     🌦️ <span id="weather">Cerah</span><br>
     ⭐ Tahun <span id="year">1</span>
   </div>
+
 </div>
 
 <div id="message"></div>
 
 <div id="toolbar">
 
-<button class="tool active" data-tool="hoe">
-<span>⛏️</span>CANGKUL
-</button>
+  <button class="tool active" data-tool="hoe">
+    <span class="toolIcon">⛏️</span>CANGKUL
+  </button>
 
-<button class="tool" data-tool="seed">
-<span>🌱</span>BIBIT
-</button>
+  <button class="tool" data-tool="seed">
+    <span class="toolIcon">🌱</span>BIBIT
+  </button>
 
-<button class="tool" data-tool="water">
-<span>💧</span>SIRAM
-</button>
+  <button class="tool" data-tool="water">
+    <span class="toolIcon">💧</span>SIRAM
+  </button>
 
-<button class="tool" data-tool="harvest">
-<span>🌾</span>PANEN
-</button>
+  <button class="tool" data-tool="harvest">
+    <span class="toolIcon">🌾</span>PANEN
+  </button>
 
-<button class="tool" data-tool="axe">
-<span>🪓</span>KAPAK
-</button>
+  <button class="tool" data-tool="axe">
+    <span class="toolIcon">🪓</span>KAPAK
+  </button>
 
-<button class="tool" data-tool="pickaxe">
-<span>⛏</span>PICKAXE
-</button>
+  <button class="tool" data-tool="pickaxe">
+    <span class="toolIcon">⛏</span>PICKAXE
+  </button>
 
-<button class="tool" data-tool="hand">
-<span>✋</span>INTERAKSI
-</button>
+  <button class="tool" data-tool="hand">
+    <span class="toolIcon">✋</span>INTERAKSI
+  </button>
 
-<button class="tool" id="inventoryBtn">
-<span>🎒</span>ITEM
-</button>
+  <button class="tool" id="inventoryButton">
+    <span class="toolIcon">🎒</span>ITEM
+  </button>
 
 </div>
 
-<div id="mobile">
-<button class="d" id="u">▲</button>
-<button class="d" id="d">▼</button>
-<button class="d" id="l">◀</button>
-<button class="d" id="r">▶</button>
+<div id="mobileControls">
+  <button class="moveBtn" id="up">▲</button>
+  <button class="moveBtn" id="down">▼</button>
+  <button class="moveBtn" id="left">◀</button>
+  <button class="moveBtn" id="right">▶</button>
 </div>
 
 <button id="action">AKSI</button>
 
-<!-- MENU -->
-
 <div id="menu">
-<div class="menu">
+  <div class="menuBox">
 
-<div class="logo">ALFA FARM LIFE</div>
+    <div class="title">ALFA FARM LIFE</div>
 
-<p>V3.0 • REAL FARMING EDITION</p>
+    <p>V4.0 • REAL LIFE FARMING EDITION</p>
 
-<button id="newGame">🌱 GAME BARU</button>
-<button id="continue">▶ LANJUTKAN GAME</button>
+    <button class="menuBtn" id="newGame">
+      🌱 MULAI GAME BARU
+    </button>
 
-<p style="font-size:12px;margin-top:18px">
-WASD / Arrow = berjalan<br>
-E = menggunakan alat / interaksi<br>
-I = inventory
-</p>
+    <button class="menuBtn" id="continueGame">
+      ▶ LANJUTKAN GAME
+    </button>
 
-</div>
-</div>
+    <p style="font-size:12px;margin-top:18px">
+      WASD / ARROW = Bergerak<br>
+      E = Pakai alat / Interaksi<br>
+      I = Inventory
+    </p>
 
-<!-- SEED PICKER -->
-
-<div class="overlay" id="seedPicker">
-<div class="box">
-
-<h2>🌱 PILIH BIBIT</h2>
-
-<div class="grid">
-
-<button class="seed" data-seed="turnip">
-🥕<br>
-<b>LOBak</b><br>
-Jumlah: <span id="st">0</span>
-</button>
-
-<button class="seed" data-seed="corn">
-🌽<br>
-<b>JAGUNG</b><br>
-Jumlah: <span id="sc">0</span>
-</button>
-
-<button class="seed" data-seed="pumpkin">
-🎃<br>
-<b>LABU</b><br>
-Jumlah: <span id="sp">0</span>
-</button>
-
-<button class="seed" data-seed="carrot">
-🥕<br>
-<b>WORTEL</b><br>
-Jumlah: <span id="sr">0</span>
-</button>
-
+  </div>
 </div>
 
-<button class="close" id="closeSeed">BATAL</button>
+<div class="overlay" id="seedWindow">
 
-</div>
-</div>
+  <div class="window">
 
-<!-- INVENTORY -->
+    <h2>🌱 PILIH BIBIT</h2>
 
-<div class="overlay" id="inventory">
+    <p class="sub">
+      Pilih tanaman yang ingin kamu tanam.
+    </p>
 
-<div class="box">
+    <div class="cards">
 
-<h2>🎒 INVENTORY</h2>
+      <button class="seedBtn" data-seed="turnip">
+        🥕<br>
+        LOBak<br>
+        Stok: <span id="seedTurnip">0</span>
+      </button>
 
-<div id="inventoryGrid" class="grid"></div>
+      <button class="seedBtn" data-seed="corn">
+        🌽<br>
+        JAGUNG<br>
+        Stok: <span id="seedCorn">0</span>
+      </button>
 
-<button class="close" id="sell">
-💰 JUAL SEMUA HASIL
-</button>
+      <button class="seedBtn" data-seed="pumpkin">
+        🎃<br>
+        LABU<br>
+        Stok: <span id="seedPumpkin">0</span>
+      </button>
 
-<button class="close" id="closeInventory">
-TUTUP
-</button>
+      <button class="seedBtn" data-seed="carrot">
+        🥕<br>
+        WORTEL<br>
+        Stok: <span id="seedCarrot">0</span>
+      </button>
+
+    </div>
+
+    <button class="closeBtn" id="closeSeed">
+      BATAL
+    </button>
+
+  </div>
 
 </div>
 
-</div>
+<div class="overlay" id="inventoryWindow">
 
-<!-- SHOP -->
+  <div class="window">
 
-<div class="overlay" id="shop">
+    <h2>🎒 INVENTORY</h2>
 
-<div class="box">
+    <p class="sub">
+      Semua barang yang kamu miliki.
+    </p>
 
-<h2>🏪 TOKO SARI</h2>
+    <div class="cards" id="inventoryList"></div>
 
-<p style="margin-top:6px;color:#aebcac">
-Beli bibit untuk kebun.
-</p>
+    <button class="closeBtn" id="sellAll">
+      💰 JUAL SEMUA HASIL
+    </button>
 
-<div class="grid">
+    <button class="closeBtn" id="closeInventory">
+      TUTUP
+    </button>
 
-<div class="card">
-🌱 <b>Bibit Lobak</b>
-<p>Rp 40</p>
-<button data-buy="turnip">BELI</button>
-</div>
-
-<div class="card">
-🌽 <b>Bibit Jagung</b>
-<p>Rp 70</p>
-<button data-buy="corn">BELI</button>
-</div>
-
-<div class="card">
-🎃 <b>Bibit Labu</b>
-<p>Rp 100</p>
-<button data-buy="pumpkin">BELI</button>
-</div>
-
-<div class="card">
-🥕 <b>Bibit Wortel</b>
-<p>Rp 55</p>
-<button data-buy="carrot">BELI</button>
-</div>
+  </div>
 
 </div>
 
-<button class="close" id="closeShop">
-TUTUP TOKO
-</button>
+<div class="overlay" id="shopWindow">
 
-</div>
+  <div class="window">
+
+    <h2>🏪 TOKO SARI</h2>
+
+    <p class="sub">
+      Beli bibit untuk kebunmu.
+    </p>
+
+    <div class="cards">
+
+      <div class="card">
+        🌱 <b>Bibit Lobak</b>
+        <p>Rp 40</p>
+        <button data-buy="turnip">BELI</button>
+      </div>
+
+      <div class="card">
+        🌽 <b>Bibit Jagung</b>
+        <p>Rp 70</p>
+        <button data-buy="corn">BELI</button>
+      </div>
+
+      <div class="card">
+        🎃 <b>Bibit Labu</b>
+        <p>Rp 100</p>
+        <button data-buy="pumpkin">BELI</button>
+      </div>
+
+      <div class="card">
+        🥕 <b>Bibit Wortel</b>
+        <p>Rp 55</p>
+        <button data-buy="carrot">BELI</button>
+      </div>
+
+    </div>
+
+    <button class="closeBtn" id="closeShop">
+      TUTUP TOKO
+    </button>
+
+  </div>
+
 </div>
 
 <script>
 "use strict";
 
 /* =====================================================
-   ALFA FARM LIFE V3.0
-   REAL FARMING SYSTEM
+   ALFA FARM LIFE V4.0
+   REAL FARMING ACTION SYSTEM
 ===================================================== */
 
 const canvas=document.getElementById("game");
@@ -510,100 +552,111 @@ const ctx=canvas.getContext("2d");
 
 let W=innerWidth;
 let H=innerHeight;
+let DPR=1;
 
 function resize(){
+
   W=innerWidth;
   H=innerHeight;
 
-  const dpr=Math.min(2,devicePixelRatio||1);
+  DPR=Math.min(2,window.devicePixelRatio||1);
 
-  canvas.width=W*dpr;
-  canvas.height=H*dpr;
+  canvas.width=W*DPR;
+  canvas.height=H*DPR;
 
   canvas.style.width=W+"px";
   canvas.style.height=H+"px";
 
-  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
 }
 
 addEventListener("resize",resize);
 resize();
 
-/* =========================
+/* =====================================================
    WORLD
-========================= */
+===================================================== */
 
-const TILE=48;
-const MW=44;
-const MH=30;
-
-let cameraX=0;
-let cameraY=0;
+const TILE=52;
+const MAP_W=50;
+const MAP_H=34;
 
 const map=[];
 
-for(let y=0;y<MH;y++){
+for(let y=0;y<MAP_H;y++){
+
   map[y]=[];
 
-  for(let x=0;x<MW;x++){
+  for(let x=0;x<MAP_W;x++){
+
     map[y][x]="grass";
   }
 }
 
-/* paths */
+/* jalan utama */
 
-for(let x=0;x<MW;x++){
-  map[14][x]="path";
+for(let x=0;x<MAP_W;x++){
+  map[16][x]="path";
 }
 
-for(let y=0;y<MH;y++){
-  map[y][20]="path";
+for(let y=0;y<MAP_H;y++){
+  map[y][22]="path";
 }
 
-/* farm */
+/* kebun */
 
-for(let y=4;y<12;y++){
-  for(let x=3;x<16;x++){
+for(let y=5;y<13;y++){
+
+  for(let x=4;x<17;x++){
+
     map[y][x]="farm";
   }
 }
 
-/* river */
+/* sungai */
 
-for(let y=0;y<MH;y++){
-  map[y][35]="water";
-  map[y][36]="water";
+for(let y=0;y<MAP_H;y++){
+
+  map[y][39]="water";
+  map[y][40]="water";
+  map[y][41]="water";
 }
 
-/* bridge */
+/* jembatan */
 
-map[13][35]="path";
-map[13][36]="path";
-map[14][35]="path";
-map[14][36]="path";
+for(let x=39;x<=41;x++){
+  map[16][x]="bridge";
+  map[17][x]="bridge";
+}
 
-/* =========================
+/* =====================================================
    PLAYER
-========================= */
+===================================================== */
 
 const player={
-  x:8,
-  y:14,
+  x:9,
+  y:16,
   dir:"down",
+  moving:false,
+  anim:0,
   energy:100,
   maxEnergy:100,
-  anim:0,
-  moving:false,
-  selectedSeed:"turnip"
+
+  selectedSeed:"turnip",
+
+  actionTimer:0,
+  actionType:"",
+  actionFrame:0
 };
+
+/* =====================================================
+   MONEY / INVENTORY
+===================================================== */
 
 let money=1500;
 
-/* =========================
-   INVENTORY
-========================= */
-
 const inv={
+
   turnipSeed:5,
   cornSeed:3,
   pumpkinSeed:2,
@@ -616,39 +669,37 @@ const inv={
 
   egg:0,
   milk:0,
+
   wood:0,
   stone:0
 };
 
-/* =========================
-   CROP DATA
-========================= */
+/* =====================================================
+   CROPS
+===================================================== */
 
-const cropsData={
+const cropInfo={
+
   turnip:{
     name:"Lobak",
-    icon:"🥕",
     days:3,
     price:120
   },
 
   corn:{
     name:"Jagung",
-    icon:"🌽",
     days:5,
     price:220
   },
 
   pumpkin:{
     name:"Labu",
-    icon:"🎃",
     days:7,
     price:360
   },
 
   carrot:{
     name:"Wortel",
-    icon:"🥕",
     days:4,
     price:170
   }
@@ -656,49 +707,58 @@ const cropsData={
 
 const crops=[];
 
-/* =========================
-   OBJECTS
-========================= */
+/* =====================================================
+   WORLD OBJECTS
+===================================================== */
 
 const objects=[];
 
-/* buildings */
+/* house */
 
 objects.push({
   type:"house",
-  x:6,
-  y:18,
+  x:5,
+  y:20,
   w:7,
   h:4
 });
 
+/* shop */
+
 objects.push({
   type:"shop",
-  x:23,
-  y:8,
-  w:6,
+  x:25,
+  y:9,
+  w:7,
   h:4
 });
 
+/* barn */
+
 objects.push({
   type:"barn",
-  x:24,
-  y:18,
+  x:25,
+  y:21,
   w:8,
   h:4
 });
 
 /* trees */
 
-for(let i=0;i<65;i++){
+for(let i=0;i<75;i++){
 
-  const x=2+Math.floor(Math.random()*(MW-4));
-  const y=2+Math.floor(Math.random()*(MH-4));
+  const x=2+Math.floor(Math.random()*(MAP_W-4));
+  const y=2+Math.floor(Math.random()*(MAP_H-4));
 
   if(map[y][x]==="water")continue;
   if(map[y][x]==="farm")continue;
 
-  if(x>=21&&x<=33&&y>=6&&y<=24)continue;
+  if(
+    x>=23&&
+    x<=34&&
+    y>=7&&
+    y<=27
+  )continue;
 
   objects.push({
     type:"tree",
@@ -710,10 +770,10 @@ for(let i=0;i<65;i++){
 
 /* stones */
 
-for(let i=0;i<30;i++){
+for(let i=35;i--;){
 
-  const x=2+Math.floor(Math.random()*(MW-4));
-  const y=2+Math.floor(Math.random()*(MH-4));
+  const x=2+Math.floor(Math.random()*(MAP_W-4));
+  const y=2+Math.floor(Math.random()*(MAP_H-4));
 
   if(map[y][x]==="water")continue;
   if(map[y][x]==="farm")continue;
@@ -726,144 +786,185 @@ for(let i=0;i<30;i++){
   });
 }
 
-/* =========================
+/* =====================================================
    NPC
-========================= */
+===================================================== */
 
 const npcs=[
+
   {
-    name:"Sari",
+    name:"SARI",
     role:"Pemilik Toko",
-    x:26,
-    y:14,
-    skin:"#c98765",
-    hair:"#4b2a1c",
-    shirt:"#d97885",
-    pants:"#49678b"
+    x:29,
+    y:16,
+    skin:"#c98968",
+    hair:"#3a241a",
+    shirt:"#d87582",
+    pants:"#48698d"
   },
 
   {
-    name:"Bima",
+    name:"BIMA",
     role:"Petani",
-    x:22,
+    x:20,
     y:16,
-    skin:"#b97954",
-    hair:"#17120e",
-    shirt:"#4d779b",
-    pants:"#66513d"
+    skin:"#ad704d",
+    hair:"#17130f",
+    shirt:"#47779a",
+    pants:"#66513f"
   }
 ];
 
-/* =========================
+/* =====================================================
    ANIMALS
-========================= */
+===================================================== */
 
 const animals=[
+
   {
     type:"chicken",
-    name:"Milo",
+    name:"MILO",
     x:27,
-    y:16,
-    timer:0
+    y:28,
+    timer:0,
+    anim:0
   },
 
   {
     type:"chicken",
-    name:"Luna",
-    x:29,
-    y:16,
-    timer:0
+    name:"LUNA",
+    x:30,
+    y:28,
+    timer:0,
+    anim:1
   },
 
   {
     type:"cow",
-    name:"Momo",
-    x:28,
-    y:23,
-    timer:0
+    name:"MOMO",
+    x:34,
+    y:27,
+    timer:0,
+    anim:2
   }
 ];
 
-/* =========================
+/* =====================================================
    TIME
-========================= */
+===================================================== */
 
 let day=1;
 let season="Semi";
 let year=1;
 let hour=6;
 let minute=0;
+
 let weather="Cerah";
 
-const seasons=["Semi","Panas","Gugur","Dingin"];
+const seasons=[
+  "Semi",
+  "Panas",
+  "Gugur",
+  "Dingin"
+];
 
 function randomWeather(){
 
-  const a=[
+  const list=[
     "Cerah",
     "Cerah",
     "Berawan",
     "Hujan"
   ];
 
-  weather=a[Math.floor(Math.random()*a.length)];
+  weather=
+    list[
+      Math.floor(
+        Math.random()*list.length
+      )
+    ];
 }
 
-/* =========================
+/* =====================================================
+   STATE
+===================================================== */
+
+let running=false;
+let last=performance.now();
+let timeAccumulator=0;
+
+let cameraX=0;
+let cameraY=0;
+
+let selectedTool="hoe";
+
+let messageTimer=0;
+
+/* =====================================================
    MESSAGE
-========================= */
+===================================================== */
 
-let msgTimer;
+function showMessage(text){
 
-function message(t){
+  const box=document.getElementById("message");
 
-  const el=document.getElementById("message");
+  box.textContent=text;
+  box.classList.add("show");
 
-  el.textContent=t;
-  el.classList.add("show");
+  clearTimeout(messageTimer);
 
-  clearTimeout(msgTimer);
+  messageTimer=setTimeout(()=>{
 
-  msgTimer=setTimeout(()=>{
-    el.classList.remove("show");
-  },2000);
+    box.classList.remove("show");
+
+  },1900);
 }
 
-/* =========================
+/* =====================================================
    SAVE
-========================= */
+===================================================== */
 
-function save(){
+function saveGame(){
 
-  const data={
-    player:{
-      x:player.x,
-      y:player.y,
-      dir:player.dir
-    },
+  try{
 
-    money,
-    inv,
-    crops,
-    day,
-    season,
-    year,
-    hour,
-    minute,
-    weather
-  };
+    localStorage.setItem(
+      "ALFA_FARM_LIFE_V4",
+      JSON.stringify({
 
-  localStorage.setItem(
-    "ALFA_FARM_LIFE_V3",
-    JSON.stringify(data)
-  );
+        player:{
+          x:player.x,
+          y:player.y,
+          dir:player.dir
+        },
+
+        money,
+
+        inv,
+
+        crops,
+
+        day,
+        season,
+        year,
+        hour,
+        minute,
+        weather
+      })
+    );
+
+  }catch(err){
+
+    console.error("SAVE ERROR",err);
+  }
 }
 
-function load(){
+function loadGame(){
 
-  const raw=localStorage.getItem(
-    "ALFA_FARM_LIFE_V3"
-  );
+  const raw=
+    localStorage.getItem(
+      "ALFA_FARM_LIFE_V4"
+    );
 
   if(!raw)return false;
 
@@ -877,37 +978,43 @@ function load(){
 
     money=data.money;
 
-    Object.keys(inv).forEach(k=>{
-      inv[k]=data.inv[k]||0;
+    Object.keys(inv).forEach(key=>{
+
+      inv[key]=
+        Number(data.inv[key]||0);
     });
 
     crops.length=0;
 
-    data.crops.forEach(c=>{
-      crops.push(c);
-    });
+    if(Array.isArray(data.crops)){
 
-    day=data.day;
-    season=data.season;
-    year=data.year;
-    hour=data.hour;
-    minute=data.minute;
-    weather=data.weather;
+      data.crops.forEach(c=>{
+        crops.push(c);
+      });
+    }
+
+    day=data.day||1;
+    season=data.season||"Semi";
+    year=data.year||1;
+    hour=data.hour||6;
+    minute=data.minute||0;
+    weather=data.weather||"Cerah";
 
     updateHUD();
 
     return true;
 
-  }catch(e){
+  }catch(err){
 
-    console.error(e);
+    console.error("LOAD ERROR",err);
+
     return false;
   }
 }
 
-/* =========================
+/* =====================================================
    COLLISION
-========================= */
+===================================================== */
 
 function objectAt(x,y){
 
@@ -917,10 +1024,14 @@ function objectAt(x,y){
       o.type==="tree"||
       o.type==="stone"
     ){
-      return o.x===x&&o.y===y;
+
+      return(
+        o.x===x&&
+        o.y===y
+      );
     }
 
-    return (
+    return(
       x>=o.x&&
       x<o.x+o.w&&
       y>=o.y&&
@@ -931,31 +1042,33 @@ function objectAt(x,y){
 
 function blocked(x,y){
 
-  if(x<0||y<0||x>=MW||y>=MH)return true;
+  if(
+    x<0||
+    y<0||
+    x>=MAP_W||
+    y>=MAP_H
+  ){
+    return true;
+  }
 
   if(map[y][x]==="water")return true;
 
   const o=objectAt(x,y);
 
-  if(o){
+  if(!o)return false;
 
-    if(
-      o.type==="tree"||
-      o.type==="stone"||
-      o.type==="house"||
-      o.type==="shop"||
-      o.type==="barn"
-    ){
-      return true;
-    }
-  }
-
-  return false;
+  return[
+    "tree",
+    "stone",
+    "house",
+    "shop",
+    "barn"
+  ].includes(o.type);
 }
 
-/* =========================
+/* =====================================================
    MOVEMENT
-========================= */
+===================================================== */
 
 const keys={};
 
@@ -964,54 +1077,58 @@ addEventListener("keydown",e=>{
   keys[e.key.toLowerCase()]=true;
 
   if(e.key.toLowerCase()==="e"){
-    action();
+    doAction();
   }
 
   if(e.key.toLowerCase()==="i"){
-    inventoryOpen();
+    toggleInventory();
   }
 
   if(e.key==="Escape"){
-    closePanels();
+    closeWindows();
   }
 });
 
 addEventListener("keyup",e=>{
+
   keys[e.key.toLowerCase()]=false;
 });
 
-function move(dx,dy){
+function movePlayer(dx,dy){
 
   if(!running)return;
 
-  const nx=player.x+dx;
-  const ny=player.y+dy;
+  if(player.actionTimer>0)return;
 
   if(dx>0)player.dir="right";
   if(dx<0)player.dir="left";
   if(dy>0)player.dir="down";
   if(dy<0)player.dir="up";
 
-  if(!blocked(Math.round(nx),Math.round(ny))){
+  const nx=player.x+dx;
+  const ny=player.y+dy;
+
+  if(
+    !blocked(
+      Math.round(nx),
+      Math.round(ny)
+    )
+  ){
 
     player.x=nx;
     player.y=ny;
 
     player.moving=true;
-    player.anim+=.25;
 
-    player.energy=Math.max(
-      0,
-      player.energy-.01
-    );
+    player.anim+=.28;
   }
 }
 
-/* =========================
+/* =====================================================
    TARGET
-========================= */
+===================================================== */
 
-function target(){
+function getTarget(){
 
   let x=Math.round(player.x);
   let y=Math.round(player.y);
@@ -1021,81 +1138,101 @@ function target(){
   if(player.dir==="left")x--;
   if(player.dir==="right")x++;
 
-  return {x,y};
+  return{x,y};
 }
 
-/* =========================
-   TOOL SYSTEM
-========================= */
+/* =====================================================
+   TOOL SELECT
+===================================================== */
 
-let selectedTool="hoe";
+document.querySelectorAll("[data-tool]").forEach(button=>{
 
-document.querySelectorAll("[data-tool]").forEach(btn=>{
+  button.addEventListener("click",()=>{
 
-  btn.onclick=()=>{
-
-    selectedTool=btn.dataset.tool;
+    selectedTool=button.dataset.tool;
 
     document
       .querySelectorAll("[data-tool]")
-      .forEach(b=>b.classList.remove("active"));
+      .forEach(b=>{
+        b.classList.remove("active");
+      });
 
-    btn.classList.add("active");
+    button.classList.add("active");
 
     if(selectedTool==="seed"){
+
       openSeeds();
+
       return;
     }
 
-    message(
-      "Alat aktif: "+btn.textContent.trim()
+    const labels={
+      hoe:"CANGKUL",
+      water:"SIRAM",
+      harvest:"PANEN",
+      axe:"KAPAK",
+      pickaxe:"PICKAXE",
+      hand:"INTERAKSI"
+    };
+
+    showMessage(
+      "Alat dipilih: "+
+      (labels[selectedTool]||"")
     );
-  };
+  });
 });
 
-/* =========================
+/* =====================================================
    ACTION
-========================= */
+===================================================== */
 
-function action(){
+function doAction(){
 
   if(!running)return;
 
-  const t=target();
+  if(player.actionTimer>0)return;
 
-  /* first: NPC */
+  const t=getTarget();
+
+  /* NPC */
 
   const npc=npcs.find(n=>
-    Math.abs(n.x-t.x)<=0.8 &&
-    Math.abs(n.y-t.y)<=0.8
+    Math.abs(n.x-t.x)<=.8&&
+    Math.abs(n.y-t.y)<=.8
   );
 
   if(npc){
+
     talk(npc);
+
     return;
   }
 
   /* animal */
 
   const animal=animals.find(a=>
-    Math.abs(a.x-t.x)<=0.8 &&
-    Math.abs(a.y-t.y)<=0.8
+    Math.abs(a.x-t.x)<=.8&&
+    Math.abs(a.y-t.y)<=.8
   );
 
   if(animal){
-    pet(animal);
+
+    interactAnimal(animal);
+
     return;
   }
 
-  /* shop entrance area */
+  /* shop area */
 
   if(
-    t.x>=22&&
-    t.x<=29&&
-    t.y>=7&&
+    t.x>=25&&
+    t.x<=31&&
+    t.y>=8&&
     t.y<=14
   ){
+
     openShop();
+
     return;
   }
 
@@ -1103,35 +1240,430 @@ function action(){
 
   if(
     t.x>=5&&
-    t.x<=14&&
-    t.y>=17&&
-    t.y<=23
+    t.x<=11&&
+    t.y>=19&&
+    t.y<=25
   ){
+
     rest();
+
     return;
   }
 
   useTool();
 }
 
-/* =========================
-   USE TOOL
-========================= */
+/* =====================================================
+   ACTION ANIMATION
+===================================================== */
 
-function useTool(){
+function startToolAnimation(type){
 
-  if(player.energy<=1){
+  player.actionType=type;
+  player.actionFrame=0;
 
-    message("⚡ Energi habis. Istirahat di rumah.");
+  const duration={
+    hoe:360,
+    water:500,
+    harvest:360,
+    axe:420,
+    pickaxe:420,
+    seed:360
+  };
+
+  player.actionTimer=
+    duration[type]||350;
+}
+
+/* =====================================================
+   HOE
+===================================================== */
+
+function useHoe(x,y){
+
+  if(
+    map[y]?.[x]!=="farm" &&
+    map[y]?.[x]!=="tilled"
+  ){
+
+    showMessage(
+      "⛏️ Cangkul hanya untuk tanah kebun."
+    );
+
     return;
   }
 
-  const t=target();
+  if(map[y][x]==="tilled"){
+
+    showMessage(
+      "Tanah ini sudah dicangkul."
+    );
+
+    return;
+  }
+
+  if(player.energy<2){
+
+    showMessage(
+      "⚡ Energi tidak cukup."
+    );
+
+    return;
+  }
+
+  map[y][x]="tilled";
+
+  player.energy-=2;
+
+  startToolAnimation("hoe");
+
+  createEffect(
+    x*TILE+TILE/2,
+    y*TILE+TILE/2,
+    "soil"
+  );
+
+  showMessage(
+    "⛏️ Raka mencangkul tanah."
+  );
+
+  saveGame();
+}
+
+/* =====================================================
+   PLANT
+===================================================== */
+
+function plant(x,y){
+
+  if(map[y]?.[x]!=="tilled"){
+
+    showMessage(
+      "🌱 Cangkul tanah dahulu."
+    );
+
+    return;
+  }
+
+  if(
+    crops.some(
+      c=>c.x===x&&c.y===y
+    )
+  ){
+
+    showMessage(
+      "Tanaman sudah ada di sini."
+    );
+
+    return;
+  }
+
+  const type=player.selectedSeed;
+
+  if(inv[type+"Seed"]<=0){
+
+    showMessage(
+      "Bibit habis. Pergi ke toko."
+    );
+
+    return;
+  }
+
+  inv[type+"Seed"]--;
+
+  crops.push({
+
+    x,
+    y,
+    type,
+    age:0,
+    watered:false
+  });
+
+  player.energy-=1;
+
+  startToolAnimation("seed");
+
+  createEffect(
+    x*TILE+TILE/2,
+    y*TILE+TILE/2,
+    "plant"
+  );
+
+  showMessage(
+    "🌱 "+cropInfo[type].name+
+    " berhasil ditanam!"
+  );
+
+  saveGame();
+}
+
+/* =====================================================
+   WATER
+===================================================== */
+
+function water(x,y){
+
+  const crop=crops.find(
+    c=>c.x===x&&c.y===y
+  );
+
+  if(!crop){
+
+    showMessage(
+      "💧 Tidak ada tanaman."
+    );
+
+    return;
+  }
+
+  if(crop.watered){
+
+    showMessage(
+      "Tanaman sudah disiram."
+    );
+
+    return;
+  }
+
+  if(player.energy<1){
+
+    showMessage(
+      "⚡ Energi tidak cukup."
+    );
+
+    return;
+  }
+
+  crop.watered=true;
+
+  player.energy-=1;
+
+  startToolAnimation("water");
+
+  createEffect(
+    x*TILE+TILE/2,
+    y*TILE+TILE/2,
+    "water"
+  );
+
+  showMessage(
+    "💧 Raka menyiram tanaman."
+  );
+
+  saveGame();
+}
+
+/* =====================================================
+   HARVEST
+===================================================== */
+
+function harvest(x,y){
+
+  const index=crops.findIndex(
+    c=>c.x===x&&c.y===y
+  );
+
+  if(index<0){
+
+    showMessage(
+      "🌾 Tidak ada tanaman."
+    );
+
+    return;
+  }
+
+  const crop=crops[index];
+  const info=cropInfo[crop.type];
+
+  if(crop.age<info.days){
+
+    showMessage(
+      "🌱 Belum matang. "+
+      (info.days-crop.age)+
+      " hari lagi."
+    );
+
+    return;
+  }
+
+  inv[crop.type]++;
+
+  crops.splice(index,1);
+
+  player.energy-=1;
+
+  startToolAnimation("harvest");
+
+  createEffect(
+    x*TILE+TILE/2,
+    y*TILE+TILE/2,
+    "harvest"
+  );
+
+  showMessage(
+    "🌾 "+info.name+
+    " berhasil dipanen!"
+  );
+
+  saveGame();
+}
+
+/* =====================================================
+   AXE
+===================================================== */
+
+function useAxe(x,y){
+
+  const tree=objects.find(o=>
+    o.type==="tree"&&
+    o.x===x&&
+    o.y===y
+  );
+
+  if(!tree){
+
+    showMessage(
+      "🪓 Tidak ada pohon di depan."
+    );
+
+    return;
+  }
+
+  if(player.energy<3){
+
+    showMessage(
+      "⚡ Energi tidak cukup."
+    );
+
+    return;
+  }
+
+  tree.hp--;
+
+  player.energy-=3;
+
+  startToolAnimation("axe");
+
+  createEffect(
+    x*TILE+TILE/2,
+    y*TILE+TILE/2,
+    "hit"
+  );
+
+  if(tree.hp<=0){
+
+    inv.wood+=4;
+
+    objects.splice(
+      objects.indexOf(tree),
+      1
+    );
+
+    showMessage(
+      "🪵 Pohon tumbang! +4 kayu."
+    );
+
+  }else{
+
+    showMessage(
+      "🪓 Tebang pohon. Sisa "+
+      tree.hp+
+      " pukulan."
+    );
+  }
+
+  saveGame();
+}
+
+/* =====================================================
+   PICKAXE
+===================================================== */
+
+function usePickaxe(x,y){
+
+  const stone=objects.find(o=>
+    o.type==="stone"&&
+    o.x===x&&
+    o.y===y
+  );
+
+  if(!stone){
+
+    showMessage(
+      "⛏ Tidak ada batu di depan."
+    );
+
+    return;
+  }
+
+  if(player.energy<3){
+
+    showMessage(
+      "⚡ Energi tidak cukup."
+    );
+
+    return;
+  }
+
+  stone.hp--;
+
+  player.energy-=3;
+
+  startToolAnimation("pickaxe");
+
+  createEffect(
+    x*TILE+TILE/2,
+    y*TILE+TILE/2,
+    "hit"
+  );
+
+  if(stone.hp<=0){
+
+    inv.stone+=3;
+
+    objects.splice(
+      objects.indexOf(stone),
+      1
+    );
+
+    showMessage(
+      "🪨 Batu pecah! +3 batu."
+    );
+
+  }else{
+
+    showMessage(
+      "⛏ Batu dipukul. Sisa "+
+      stone.hp+
+      " pukulan."
+    );
+  }
+
+  saveGame();
+}
+
+/* =====================================================
+   USE TOOL
+===================================================== */
+
+function useTool(){
+
+  const t=getTarget();
+
+  if(player.energy<=0){
+
+    showMessage(
+      "⚡ Energi habis. Istirahat."
+    );
+
+    return;
+  }
 
   switch(selectedTool){
 
     case"hoe":
-      hoe(t.x,t.y);
+      useHoe(t.x,t.y);
       break;
 
     case"seed":
@@ -1147,274 +1679,197 @@ function useTool(){
       break;
 
     case"axe":
-      axe(t.x,t.y);
+      useAxe(t.x,t.y);
       break;
 
     case"pickaxe":
-      pickaxe(t.x,t.y);
+      usePickaxe(t.x,t.y);
       break;
 
     case"hand":
-      message("Tidak ada yang bisa diinteraksikan.");
+      showMessage(
+        "✋ Tidak ada yang bisa diinteraksikan."
+      );
       break;
   }
 }
 
-/* =========================
-   HOE
-========================= */
+/* =====================================================
+   EFFECTS
+===================================================== */
 
-function hoe(x,y){
+const effects=[];
 
-  if(x<0||y<0||x>=MW||y>=MH)return;
+function createEffect(x,y,type){
 
-  if(map[y][x]==="farm"){
+  effects.push({
 
-    map[y][x]="tilled";
-
-    player.energy-=2;
-
-    message("⛏️ Tanah dicangkul.");
-
-    save();
-
-    return;
-  }
-
-  if(map[y][x]==="tilled"){
-
-    message("Tanah sudah dicangkul.");
-    return;
-  }
-
-  message("Cangkul hanya bisa dipakai di area kebun.");
-}
-
-/* =========================
-   PLANT
-========================= */
-
-function plant(x,y){
-
-  if(map[y]?.[x]!=="tilled"){
-
-    message("⛏️ Cangkul tanah terlebih dahulu.");
-    return;
-  }
-
-  if(crops.some(c=>c.x===x&&c.y===y)){
-
-    message("Sudah ada tanaman di sini.");
-    return;
-  }
-
-  const type=player.selectedSeed;
-
-  if(inv[type+"Seed"]<=0){
-
-    message("Bibit habis. Beli di toko.");
-    return;
-  }
-
-  inv[type+"Seed"]--;
-
-  crops.push({
     x,
     y,
     type,
-    age:0,
-    watered:false
+    life:1
   });
-
-  player.energy-=1;
-
-  message(
-    "🌱 "+cropsData[type].name+" berhasil ditanam!"
-  );
-
-  save();
 }
 
-/* =========================
-   WATER
-========================= */
+function updateEffects(dt){
 
-function water(x,y){
+  for(
+    let i=effects.length-1;
+    i>=0;
+    i--
+  ){
 
-  const crop=crops.find(
-    c=>c.x===x&&c.y===y
-  );
+    effects[i].life-=dt*2;
 
-  if(!crop){
+    if(effects[i].life<=0){
 
-    message("💧 Tidak ada tanaman di sini.");
-    return;
+      effects.splice(i,1);
+    }
   }
-
-  if(crop.watered){
-
-    message("Tanaman sudah disiram hari ini.");
-    return;
-  }
-
-  crop.watered=true;
-
-  player.energy-=1;
-
-  message(
-    "💧 "+cropsData[crop.type].name+
-    " berhasil disiram!"
-  );
-
-  save();
 }
 
-/* =========================
-   HARVEST
-========================= */
+function drawEffects(){
 
-function harvest(x,y){
+  effects.forEach(e=>{
 
-  const index=crops.findIndex(
-    c=>c.x===x&&c.y===y
-  );
-
-  if(index<0){
-
-    message("🌾 Tidak ada tanaman di sini.");
-    return;
-  }
-
-  const crop=crops[index];
-  const info=cropsData[crop.type];
-
-  if(crop.age<info.days){
-
-    const left=info.days-crop.age;
-
-    message(
-      "🌱 Belum matang. "+left+" hari lagi."
+    const alpha=Math.max(
+      0,
+      e.life
     );
 
-    return;
-  }
+    ctx.globalAlpha=alpha;
 
-  inv[crop.type]++;
+    if(e.type==="hit"){
 
-  crops.splice(index,1);
+      ctx.strokeStyle="#f4d27c";
+      ctx.lineWidth=3;
 
-  player.energy-=1;
+      ctx.beginPath();
 
-  message(
-    "🌾 Panen "+info.name+" berhasil!"
-  );
+      ctx.moveTo(
+        e.x-12,
+        e.y-12
+      );
 
-  save();
+      ctx.lineTo(
+        e.x+12,
+        e.y+12
+      );
+
+      ctx.moveTo(
+        e.x+12,
+        e.y-12
+      );
+
+      ctx.lineTo(
+        e.x-12,
+        e.y+12
+      );
+
+      ctx.stroke();
+
+    }else if(e.type==="water"){
+
+      ctx.fillStyle="#87d7ff";
+
+      for(let i=0;i<8;i++){
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x+(i-4)*5,
+          e.y-10-(1-e.life)*18+i%2*4,
+          3,
+          0,
+          Math.PI*2
+        );
+
+        ctx.fill();
+      }
+
+    }else if(e.type==="soil"){
+
+      ctx.fillStyle="#a7784a";
+
+      for(let i=0;i<7;i++){
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x+(i-3)*4,
+          e.y-(1-e.life)*15,
+          3,
+          0,
+          Math.PI*2
+        );
+
+        ctx.fill();
+      }
+
+    }else if(e.type==="plant"){
+
+      ctx.strokeStyle="#75c65c";
+      ctx.lineWidth=3;
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        e.x,
+        e.y+5
+      );
+
+      ctx.lineTo(
+        e.x,
+        e.y-15+(1-e.life)*12
+      );
+
+      ctx.stroke();
+
+    }else if(e.type==="harvest"){
+
+      ctx.fillStyle="#f0ca57";
+      ctx.font="bold 22px Arial";
+      ctx.textAlign="center";
+
+      ctx.fillText(
+        "✦",
+        e.x,
+        e.y-15-(1-e.life)*25
+      );
+    }
+
+    ctx.globalAlpha=1;
+  });
 }
 
-/* =========================
-   AXE
-========================= */
-
-function axe(x,y){
-
-  const tree=objects.find(
-    o=>o.type==="tree"&&
-    o.x===x&&
-    o.y===y
-  );
-
-  if(!tree){
-
-    message("🪓 Tidak ada pohon di depan.");
-    return;
-  }
-
-  tree.hp--;
-
-  player.energy-=3;
-
-  if(tree.hp<=0){
-
-    inv.wood+=4;
-
-    objects.splice(
-      objects.indexOf(tree),
-      1
-    );
-
-    message("🪵 Pohon tumbang! +4 kayu.");
-
-  }else{
-
-    message(
-      "🪓 Pohon ditebang. "+
-      tree.hp+" pukulan lagi."
-    );
-  }
-
-  save();
-}
-
-/* =========================
-   PICKAXE
-========================= */
-
-function pickaxe(x,y){
-
-  const stone=objects.find(
-    o=>o.type==="stone"&&
-    o.x===x&&
-    o.y===y
-  );
-
-  if(!stone){
-
-    message("⛏ Tidak ada batu di depan.");
-    return;
-  }
-
-  stone.hp--;
-
-  player.energy-=3;
-
-  if(stone.hp<=0){
-
-    inv.stone+=3;
-
-    objects.splice(
-      objects.indexOf(stone),
-      1
-    );
-
-    message("🪨 Batu hancur! +3 batu.");
-
-  }else{
-
-    message(
-      "⛏ Batu dipukul. "+
-      stone.hp+" pukulan lagi."
-    );
-  }
-
-  save();
-}
-
-/* =========================
-   SEEDS
-========================= */
+/* =====================================================
+   SEED WINDOW
+===================================================== */
 
 function openSeeds(){
 
-  document.getElementById("st").textContent=inv.turnipSeed;
-  document.getElementById("sc").textContent=inv.cornSeed;
-  document.getElementById("sp").textContent=inv.pumpkinSeed;
-  document.getElementById("sr").textContent=inv.carrotSeed;
+  document.getElementById(
+    "seedTurnip"
+  ).textContent=inv.turnipSeed;
 
-  document.getElementById("seedPicker").style.display="flex";
+  document.getElementById(
+    "seedCorn"
+  ).textContent=inv.cornSeed;
+
+  document.getElementById(
+    "seedPumpkin"
+  ).textContent=inv.pumpkinSeed;
+
+  document.getElementById(
+    "seedCarrot"
+  ).textContent=inv.carrotSeed;
+
+  document.getElementById(
+    "seedWindow"
+  ).style.display="flex";
 }
 
-document.querySelectorAll(".seed").forEach(btn=>{
+document.querySelectorAll("[data-seed]").forEach(btn=>{
 
   btn.onclick=()=>{
 
@@ -1423,115 +1878,120 @@ document.querySelectorAll(".seed").forEach(btn=>{
     player.selectedSeed=type;
 
     document.getElementById(
-      "seedPicker"
+      "seedWindow"
     ).style.display="none";
 
-    message(
-      "Bibit dipilih: "+
-      cropsData[type].name+
-      ". Tekan AKSI untuk menanam."
+    showMessage(
+      "🌱 Dipilih: "+
+      cropInfo[type].name+
+      ". Hadap tanah lalu tekan AKSI."
     );
   };
 });
 
 document.getElementById("closeSeed").onclick=()=>{
-  document.getElementById("seedPicker").style.display="none";
+  document.getElementById(
+    "seedWindow"
+  ).style.display="none";
 };
 
-/* =========================
+/* =====================================================
    NPC
-========================= */
+===================================================== */
 
 function talk(npc){
 
-  if(npc.name==="Sari"){
+  if(npc.name==="SARI"){
 
-    message(
-      "Sari: Selamat datang, Raka! "+
-      "Jangan lupa rawat kebunmu."
+    showMessage(
+      "Sari: Hai Raka! Bibit baru sudah datang."
     );
 
   }else{
 
-    message(
-      "Bima: Siram tanaman setiap hari "+
-      "supaya cepat tumbuh."
+    showMessage(
+      "Bima: Jangan lupa siram tanamanmu setiap hari."
     );
   }
 }
 
-/* =========================
+/* =====================================================
    ANIMALS
-========================= */
+===================================================== */
 
-function pet(animal){
+function interactAnimal(animal){
 
   if(animal.type==="chicken"){
 
-    message(
+    showMessage(
       animal.name+
       ": Kukuruyuk! 🐔"
     );
 
   }else{
 
-    message(
+    showMessage(
       animal.name+
       ": Moooo! 🐄"
     );
   }
 }
 
-/* =========================
+/* =====================================================
    SHOP
-========================= */
+===================================================== */
 
 function openShop(){
 
-  document.getElementById("shop").style.display="flex";
+  document.getElementById(
+    "shopWindow"
+  ).style.display="flex";
 }
 
-function closeShop(){
+document.getElementById("closeShop").onclick=()=>{
+  document.getElementById(
+    "shopWindow"
+  ).style.display="none";
+};
 
-  document.getElementById("shop").style.display="none";
-}
+document.querySelectorAll("[data-buy]").forEach(button=>{
 
-document.getElementById("closeShop").onclick=closeShop;
+  button.onclick=()=>{
 
-document.querySelectorAll("[data-buy]").forEach(btn=>{
+    const type=button.dataset.buy;
 
-  btn.onclick=()=>{
-
-    const type=btn.dataset.buy;
-
-    const prices={
+    const price={
       turnip:40,
       corn:70,
       pumpkin:100,
       carrot:55
-    };
+    }[type];
 
-    if(money<prices[type]){
+    if(money<price){
 
-      message("💰 Uang tidak cukup.");
+      showMessage(
+        "💰 Uang tidak cukup."
+      );
+
       return;
     }
 
-    money-=prices[type];
+    money-=price;
+
     inv[type+"Seed"]++;
 
     updateHUD();
-    save();
+    saveGame();
 
-    message(
+    showMessage(
       "🌱 1 bibit berhasil dibeli."
     );
   };
 });
 
-/* =========================
-   HOME
-========================= */
+/* =====================================================
+   HOUSE
+===================================================== */
 
 function rest(){
 
@@ -1539,18 +1999,18 @@ function rest(){
 
   advanceDay();
 
-  message(
-    "🏠 Kamu beristirahat. Hari baru dimulai."
+  showMessage(
+    "🏠 Raka beristirahat. Hari baru dimulai."
   );
 }
 
-/* =========================
-   DAY
-========================= */
+/* =====================================================
+   TIME
+===================================================== */
 
-function advanceTime(m){
+function advanceTime(minutes){
 
-  minute+=m;
+  minute+=minutes;
 
   while(minute>=60){
 
@@ -1572,16 +2032,18 @@ function advanceDay(){
 
     day=1;
 
-    const i=seasons.indexOf(season);
+    const index=
+      seasons.indexOf(season);
 
-    if(i>=3){
+    if(index>=3){
 
       season="Semi";
       year++;
 
     }else{
 
-      season=seasons[i+1];
+      season=
+        seasons[index+1];
     }
   }
 
@@ -1592,119 +2054,140 @@ function advanceDay(){
 
   randomWeather();
 
-  crops.forEach(c=>{
+  crops.forEach(crop=>{
 
-    if(c.watered){
+    if(crop.watered){
 
-      c.age++;
+      crop.age++;
     }
 
-    c.watered=false;
+    crop.watered=false;
   });
 
-  animals.forEach(a=>{
+  animals.forEach(animal=>{
 
-    a.timer++;
+    animal.timer++;
 
     if(
-      a.type==="chicken"&&
-      a.timer>=2
+      animal.type==="chicken" &&
+      animal.timer>=2
     ){
 
       inv.egg++;
-      a.timer=0;
+      animal.timer=0;
     }
 
     if(
-      a.type==="cow"&&
-      a.timer>=3
+      animal.type==="cow" &&
+      animal.timer>=3
     ){
 
       inv.milk++;
-      a.timer=0;
+      animal.timer=0;
     }
   });
 
-  save();
+  saveGame();
 }
 
-/* =========================
+/* =====================================================
    INVENTORY
-========================= */
+===================================================== */
 
-function inventoryOpen(){
+function toggleInventory(){
 
-  const el=document.getElementById("inventory");
+  const window=
+    document.getElementById(
+      "inventoryWindow"
+    );
 
-  if(el.style.display==="flex"){
+  if(
+    window.style.display==="flex"
+  ){
 
-    el.style.display="none";
+    window.style.display="none";
 
   }else{
 
     renderInventory();
-    el.style.display="flex";
+
+    window.style.display="flex";
   }
 }
 
 function renderInventory(){
 
-  const grid=document.getElementById("inventoryGrid");
+  const list=
+    document.getElementById(
+      "inventoryList"
+    );
 
-  grid.innerHTML="";
+  list.innerHTML="";
 
-  const list=[
+  const items=[
+
     ["🌱","Bibit Lobak","turnipSeed"],
     ["🌽","Bibit Jagung","cornSeed"],
     ["🎃","Bibit Labu","pumpkinSeed"],
     ["🥕","Bibit Wortel","carrotSeed"],
+
     ["🥕","Lobak","turnip"],
     ["🌽","Jagung","corn"],
     ["🎃","Labu","pumpkin"],
     ["🥕","Wortel","carrot"],
+
     ["🥚","Telur","egg"],
     ["🥛","Susu","milk"],
     ["🪵","Kayu","wood"],
     ["🪨","Batu","stone"]
   ];
 
-  list.forEach(i=>{
+  items.forEach(item=>{
 
-    const d=document.createElement("div");
+    const card=
+      document.createElement("div");
 
-    d.className="card";
+    card.className="card";
 
-    d.innerHTML=
+    card.innerHTML=
       "<div style='font-size:26px'>"+
-      i[0]+
+      item[0]+
       "</div>"+
-      "<b>"+i[1]+"</b>"+
-      "<br>Jumlah: "+
-      inv[i[2]];
+      "<b>"+
+      item[1]+
+      "</b><br>"+
+      "Jumlah: "+
+      inv[item[2]];
 
-    grid.appendChild(d);
+    list.appendChild(card);
   });
 }
 
-document.getElementById("inventoryBtn").onclick=inventoryOpen;
+document.getElementById(
+  "inventoryButton"
+).onclick=toggleInventory;
 
-document.getElementById("closeInventory").onclick=()=>{
-  document.getElementById("inventory").style.display="none";
+document.getElementById(
+  "closeInventory"
+).onclick=()=>{
+  document.getElementById(
+    "inventoryWindow"
+  ).style.display="none";
 };
 
-/* =========================
+/* =====================================================
    SELL
-========================= */
+===================================================== */
 
-document.getElementById("sell").onclick=()=>{
+document.getElementById("sellAll").onclick=()=>{
 
   let total=0;
 
-  Object.keys(cropsData).forEach(type=>{
+  Object.keys(cropInfo).forEach(type=>{
 
     total+=
       inv[type]*
-      cropsData[type].price;
+      cropInfo[type].price;
 
     inv[type]=0;
   });
@@ -1717,55 +2200,75 @@ document.getElementById("sell").onclick=()=>{
 
   if(total<=0){
 
-    message("Tidak ada hasil untuk dijual.");
+    showMessage(
+      "Tidak ada hasil untuk dijual."
+    );
+
     return;
   }
 
   money+=total;
 
-  updateHUD();
   renderInventory();
-  save();
+  updateHUD();
+  saveGame();
 
-  message(
-    "💰 Semua hasil terjual: Rp "+
+  showMessage(
+    "💰 Hasil terjual Rp "+
     total.toLocaleString("id-ID")
   );
 };
 
-/* =========================
-   PANELS
-========================= */
+/* =====================================================
+   CLOSE
+===================================================== */
 
-function closePanels(){
+function closeWindows(){
 
   document
     .querySelectorAll(".overlay")
-    .forEach(x=>x.style.display="none");
+    .forEach(el=>{
+      el.style.display="none";
+    });
 }
 
-/* =========================
+/* =====================================================
    HUD
-========================= */
+===================================================== */
 
 function updateHUD(){
 
-  document.getElementById("money").textContent=
+  document.getElementById(
+    "money"
+  ).textContent=
     money.toLocaleString("id-ID");
 
-  document.getElementById("day").textContent=day;
-  document.getElementById("season").textContent=season;
-  document.getElementById("year").textContent=year;
+  document.getElementById(
+    "day"
+  ).textContent=day;
 
-  document.getElementById("time").textContent=
+  document.getElementById(
+    "season"
+  ).textContent=season;
+
+  document.getElementById(
+    "year"
+  ).textContent=year;
+
+  document.getElementById(
+    "time"
+  ).textContent=
     String(hour).padStart(2,"0")+
     ":"+
     String(minute).padStart(2,"0");
 
-  document.getElementById("weather").textContent=
-    weather;
+  document.getElementById(
+    "weather"
+  ).textContent=weather;
 
-  document.getElementById("energyBar").style.width=
+  document.getElementById(
+    "energyFill"
+  ).style.width=
     Math.max(
       0,
       player.energy/player.maxEnergy*100
@@ -1773,22 +2276,26 @@ function updateHUD(){
 }
 
 /* =====================================================
-   DRAWING
+   CAMERA
 ===================================================== */
 
 function updateCamera(){
 
   cameraX=
-    player.x*TILE-W/2;
+    player.x*TILE-
+    W/2+
+    TILE/2;
 
   cameraY=
-    player.y*TILE-H/2;
+    player.y*TILE-
+    H/2+
+    TILE/2;
 
   cameraX=Math.max(
     0,
     Math.min(
       cameraX,
-      MW*TILE-W
+      MAP_W*TILE-W
     )
   );
 
@@ -1796,37 +2303,58 @@ function updateCamera(){
     0,
     Math.min(
       cameraY,
-      MH*TILE-H
+      MAP_H*TILE-H
     )
   );
 }
 
-/* =========================
+/* =====================================================
    GROUND
-========================= */
+===================================================== */
 
 function drawGround(){
 
-  const sx=Math.floor(cameraX/TILE)-1;
-  const ex=Math.ceil((cameraX+W)/TILE)+1;
+  const startX=
+    Math.floor(cameraX/TILE)-1;
 
-  const sy=Math.floor(cameraY/TILE)-1;
-  const ey=Math.ceil((cameraY+H)/TILE)+1;
+  const endX=
+    Math.ceil((cameraX+W)/TILE)+1;
 
-  for(let y=sy;y<ey;y++){
+  const startY=
+    Math.floor(cameraY/TILE)-1;
 
-    for(let x=sx;x<ex;x++){
+  const endY=
+    Math.ceil((cameraY+H)/TILE)+1;
 
-      if(x<0||y<0||x>=MW||y>=MH)continue;
+  for(let y=startY;y<endY;y++){
+
+    for(let x=startX;x<endX;x++){
+
+      if(
+        x<0||
+        y<0||
+        x>=MAP_W||
+        y>=MAP_H
+      )continue;
 
       const type=map[y][x];
 
-      let color="#7fc86e";
+      let color="#80c76d";
 
-      if(type==="path")color="#c9ad78";
-      if(type==="farm")color="#79bf67";
-      if(type==="tilled")color="#896442";
-      if(type==="water")color="#58a5d2";
+      if(type==="path")
+        color="#c9ae7a";
+
+      if(type==="farm")
+        color="#72bb62";
+
+      if(type==="tilled")
+        color="#8a6342";
+
+      if(type==="water")
+        color="#5da7d3";
+
+      if(type==="bridge")
+        color="#a77749";
 
       ctx.fillStyle=color;
 
@@ -1837,51 +2365,63 @@ function drawGround(){
         TILE
       );
 
-      if(type==="grass"){
+      /* grass details */
 
-        ctx.strokeStyle="rgba(35,90,35,.15)";
+      if(type==="grass"||type==="farm"){
+
+        ctx.strokeStyle=
+          "rgba(37,91,38,.17)";
+
         ctx.lineWidth=1;
 
-        ctx.beginPath();
+        for(let i=0;i<2;i++){
 
-        ctx.moveTo(
-          x*TILE+8,
-          y*TILE+40
-        );
+          const gx=
+            x*TILE+
+            8+
+            ((x*17+y*13+i*11)%30);
 
-        ctx.lineTo(
-          x*TILE+11,
-          y*TILE+33
-        );
-
-        ctx.moveTo(
-          x*TILE+35,
-          y*TILE+20
-        );
-
-        ctx.lineTo(
-          x*TILE+38,
-          y*TILE+14
-        );
-
-        ctx.stroke();
-      }
-
-      if(type==="tilled"){
-
-        ctx.strokeStyle="rgba(55,35,20,.35)";
-
-        for(let yy=7;yy<TILE;yy+=10){
+          const gy=
+            y*TILE+
+            10+
+            ((x*9+y*17+i*15)%30);
 
           ctx.beginPath();
 
           ctx.moveTo(
-            x*TILE+4,
+            gx,
+            gy+6
+          );
+
+          ctx.lineTo(
+            gx+3,
+            gy
+          );
+
+          ctx.stroke();
+        }
+      }
+
+      if(type==="tilled"){
+
+        ctx.strokeStyle=
+          "rgba(60,36,20,.3)";
+
+        for(
+          let yy=8;
+          yy<TILE;
+          yy+=11
+        ){
+
+          ctx.beginPath();
+
+          ctx.moveTo(
+            x*TILE+5,
             y*TILE+yy
           );
 
           ctx.lineTo(
-            x*TILE+44,
+            x*TILE+47,
             y*TILE+yy
           );
 
@@ -1891,31 +2431,65 @@ function drawGround(){
 
       if(type==="water"){
 
-        ctx.strokeStyle="rgba(255,255,255,.2)";
+        ctx.strokeStyle=
+          "rgba(255,255,255,.2)";
+
+        const wave=
+          Math.sin(
+            performance.now()/500+
+            y
+          )*3;
 
         ctx.beginPath();
 
         ctx.moveTo(
           x*TILE+5,
-          y*TILE+18
+          y*TILE+20+wave
         );
 
         ctx.quadraticCurveTo(
-          x*TILE+22,
-          y*TILE+11,
-          x*TILE+43,
-          y*TILE+19
+          x*TILE+25,
+          y*TILE+12-wave,
+          x*TILE+47,
+          y*TILE+20+wave
         );
 
         ctx.stroke();
+      }
+
+      if(type==="bridge"){
+
+        ctx.strokeStyle=
+          "rgba(73,42,24,.35)";
+
+        for(
+          let xx=7;
+          xx<TILE;
+          xx+=10
+        ){
+
+          ctx.beginPath();
+
+          ctx.moveTo(
+            x*TILE+xx,
+            y*TILE+2
+          );
+
+          ctx.lineTo(
+            x*TILE+xx,
+            y*TILE+TILE-2
+          );
+
+          ctx.stroke();
+        }
       }
     }
   }
 }
 
-/* =========================
+/* =====================================================
    BUILDINGS
-========================= */
+===================================================== */
 
 function drawBuildings(){
 
@@ -1930,72 +2504,101 @@ function drawBuildings(){
     const x=o.x*TILE;
     const y=o.y*TILE;
 
-    let wall="#e7d0aa";
-    let roof="#9e5540";
-    let title="RUMAH";
+    let wall="#ead0a8";
+    let roof="#974e3d";
+    let label="RUMAH";
 
     if(o.type==="shop"){
 
-      wall="#e4b85c";
-      roof="#8e4937";
-      title="TOKO";
+      wall="#e6bd62";
+      roof="#874438";
+      label="TOKO";
     }
 
     if(o.type==="barn"){
 
-      wall="#c67b52";
-      roof="#713e30";
-      title="KANDANG";
+      wall="#c87c53";
+      roof="#743e31";
+      label="KANDANG";
     }
 
-    ctx.fillStyle="rgba(0,0,0,.16)";
+    /* shadow */
+
+    ctx.fillStyle="rgba(0,0,0,.18)";
+
     ctx.fillRect(
-      x+7,
-      y+9,
+      x+9,
+      y+12,
       o.w*TILE,
       o.h*TILE
     );
+
+    /* wall */
 
     ctx.fillStyle=wall;
 
     ctx.fillRect(
       x,
-      y+20,
+      y+23,
       o.w*TILE,
-      o.h*TILE-20
+      o.h*TILE-23
     );
+
+    /* roof */
 
     ctx.fillStyle=roof;
 
     ctx.beginPath();
 
     ctx.moveTo(
-      x-10,
-      y+27
+      x-12,
+      y+28
     );
 
     ctx.lineTo(
       x+o.w*TILE/2,
-      y-20
+      y-24
     );
 
     ctx.lineTo(
-      x+o.w*TILE+10,
-      y+27
+      x+o.w*TILE+12,
+      y+28
     );
 
     ctx.closePath();
 
     ctx.fill();
 
-    ctx.fillStyle="#503326";
+    /* door */
+
+    ctx.fillStyle="#553629";
 
     ctx.fillRect(
-      x+o.w*TILE/2-19,
-      y+o.h*TILE-58,
-      38,
-      58
+      x+o.w*TILE/2-20,
+      y+o.h*TILE-61,
+      40,
+      61
     );
+
+    /* windows */
+
+    ctx.fillStyle="#9fd1df";
+
+    ctx.fillRect(
+      x+23,
+      y+48,
+      28,
+      24
+    );
+
+    ctx.fillRect(
+      x+o.w*TILE-51,
+      y+48,
+      28,
+      24
+    );
+
+    /* sign */
 
     ctx.fillStyle="#fff";
 
@@ -2003,16 +2606,16 @@ function drawBuildings(){
     ctx.textAlign="center";
 
     ctx.fillText(
-      title,
+      label,
       x+o.w*TILE/2,
-      y+43
+      y+38
     );
   });
 }
 
-/* =========================
-   TREES & STONES
-========================= */
+/* =====================================================
+   TREES
+===================================================== */
 
 function drawResources(){
 
@@ -2020,68 +2623,10 @@ function drawResources(){
 
     if(o.type==="tree"){
 
-      const x=o.x*TILE+24;
-      const y=o.y*TILE+30;
+      const x=o.x*TILE+TILE/2;
+      const y=o.y*TILE+TILE/2;
 
-      ctx.fillStyle="rgba(0,0,0,.17)";
-      ctx.beginPath();
-      ctx.ellipse(
-        x,
-        y+15,
-        20,
-        7,
-        0,
-        0,
-        Math.PI*2
-      );
-      ctx.fill();
-
-      ctx.fillStyle="#69462b";
-      ctx.fillRect(
-        x-7,
-        y-3,
-        14,
-        29
-      );
-
-      ctx.fillStyle="#275f35";
-
-      ctx.beginPath();
-      ctx.arc(
-        x,
-        y-15,
-        25,
-        0,
-        Math.PI*2
-      );
-      ctx.fill();
-
-      ctx.fillStyle="#347a43";
-
-      ctx.beginPath();
-      ctx.arc(
-        x-17,
-        y-5,
-        18,
-        0,
-        Math.PI*2
-      );
-
-      ctx.arc(
-        x+17,
-        y-5,
-        18,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-    }
-
-    if(o.type==="stone"){
-
-      const x=o.x*TILE+24;
-      const y=o.y*TILE+33;
+      /* shadow */
 
       ctx.fillStyle="rgba(0,0,0,.18)";
 
@@ -2089,8 +2634,138 @@ function drawResources(){
 
       ctx.ellipse(
         x,
-        y+7,
+        y+20,
+        23,
+        8,
+        0,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      /* trunk */
+
+      ctx.fillStyle="#67432b";
+
+      ctx.fillRect(
+        x-8,
+        y-8,
+        16,
+        38
+      );
+
+      /* branches */
+
+      ctx.strokeStyle="#5c3b27";
+      ctx.lineWidth=7;
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x,
+        y-2
+      );
+
+      ctx.lineTo(
+        x-17,
+        y-23
+      );
+
+      ctx.moveTo(
+        x,
+        y-5
+      );
+
+      ctx.lineTo(
+        x+18,
+        y-26
+      );
+
+      ctx.stroke();
+
+      /* crown */
+
+      ctx.fillStyle="#285d35";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x,
+        y-28,
+        27,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      ctx.fillStyle="#377d43";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x-19,
+        y-18,
+        20,
+        0,
+        Math.PI*2
+      );
+
+      ctx.arc(
+        x+19,
+        y-17,
+        20,
+        0,
+        Math.PI*2
+      );
+
+      ctx.arc(
+        x,
+        y-45,
         19,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      /* hp */
+
+      if(o.hp<3){
+
+        ctx.fillStyle="rgba(0,0,0,.5)";
+        ctx.fillRect(
+          x-19,
+          y-63,
+          38,
+          4
+        );
+
+        ctx.fillStyle="#d95b4c";
+
+        ctx.fillRect(
+          x-19,
+          y-63,
+          38*(o.hp/3),
+          4
+        );
+      }
+    }
+
+    if(o.type==="stone"){
+
+      const x=o.x*TILE+TILE/2;
+      const y=o.y*TILE+TILE/2+7;
+
+      ctx.fillStyle="rgba(0,0,0,.16)";
+
+      ctx.beginPath();
+
+      ctx.ellipse(
+        x,
+        y+12,
+        21,
         7,
         0,
         0,
@@ -2099,101 +2774,167 @@ function drawResources(){
 
       ctx.fill();
 
-      ctx.fillStyle="#727978";
+      ctx.fillStyle="#737978";
 
       ctx.beginPath();
 
-      ctx.moveTo(x-18,y+5);
-      ctx.lineTo(x-11,y-13);
+      ctx.moveTo(x-20,y+7);
+      ctx.lineTo(x-12,y-13);
       ctx.lineTo(x+7,y-19);
-      ctx.lineTo(x+19,y-3);
+      ctx.lineTo(x+21,y-4);
       ctx.lineTo(x+12,y+13);
       ctx.lineTo(x-8,y+16);
       ctx.closePath();
 
       ctx.fill();
 
-      ctx.fillStyle="rgba(255,255,255,.25)";
-      ctx.fillRect(x-8,y-9,9,4);
+      ctx.fillStyle="rgba(255,255,255,.28)";
+
+      ctx.fillRect(
+        x-9,
+        y-10,
+        10,
+        4
+      );
+
+      if(o.hp<2){
+
+        ctx.strokeStyle="#403f3d";
+        ctx.lineWidth=2;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+          x-3,
+          y-9
+        );
+
+        ctx.lineTo(
+          x+7,
+          y+8
+        );
+
+        ctx.stroke();
+      }
     }
   });
 }
 
-/* =========================
+/* =====================================================
    CROPS
-========================= */
+===================================================== */
 
 function drawCrops(){
 
   crops.forEach(c=>{
 
-    const x=c.x*TILE+24;
-    const y=c.y*TILE+25;
+    const x=c.x*TILE+TILE/2;
+    const y=c.y*TILE+TILE/2;
 
-    const info=cropsData[c.type];
+    const info=cropInfo[c.type];
 
-    const grow=Math.min(
-      1,
-      c.age/info.days
+    const growth=
+      Math.min(
+        1,
+        c.age/info.days
+      );
+
+    /* shadow */
+
+    ctx.fillStyle="rgba(0,0,0,.12)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      x,
+      y+16,
+      14,
+      5,
+      0,
+      0,
+      Math.PI*2
     );
 
-    ctx.fillStyle="#4a3520";
-    ctx.fillRect(
-      x-3,
-      y+8,
-      6,
-      12
-    );
+    ctx.fill();
 
-    if(grow<.34){
+    /* very young */
 
-      ctx.strokeStyle="#3d853e";
-      ctx.lineWidth=3;
+    if(growth<.34){
+
+      ctx.strokeStyle="#4a9142";
+      ctx.lineWidth=4;
 
       ctx.beginPath();
 
-      ctx.moveTo(x,y+12);
-      ctx.lineTo(x,y-5);
+      ctx.moveTo(
+        x,
+        y+12
+      );
 
-      ctx.moveTo(x,y);
-      ctx.lineTo(x-8,y-6);
+      ctx.lineTo(
+        x,
+        y-7
+      );
 
-      ctx.moveTo(x,y-2);
-      ctx.lineTo(x+8,y-7);
+      ctx.moveTo(
+        x,
+        y-1
+      );
+
+      ctx.lineTo(
+        x-9,
+        y-8
+      );
+
+      ctx.moveTo(
+        x,
+        y-2
+      );
+
+      ctx.lineTo(
+        x+9,
+        y-9
+      );
 
       ctx.stroke();
+    }
 
-    }else if(grow<.75){
+    /* growing */
 
-      ctx.fillStyle="#368342";
+    else if(growth<.75){
+
+      ctx.fillStyle="#3e8743";
 
       ctx.beginPath();
 
       ctx.ellipse(
-        x-8,
+        x-9,
         y,
         9,
         17,
-        -.5,
+        -.55,
         0,
         Math.PI*2
       );
 
       ctx.ellipse(
-        x+8,
+        x+9,
         y,
         9,
         17,
-        .5,
+        .55,
         0,
         Math.PI*2
       );
 
       ctx.fill();
+    }
 
-    }else{
+    /* mature */
 
-      ctx.fillStyle="#2d7137";
+    else{
+
+      ctx.fillStyle="#33753a";
 
       ctx.beginPath();
 
@@ -2202,7 +2943,7 @@ function drawCrops(){
         y,
         11,
         19,
-        -.5,
+        -.55,
         0,
         Math.PI*2
       );
@@ -2212,7 +2953,7 @@ function drawCrops(){
         y,
         11,
         19,
-        .5,
+        .55,
         0,
         Math.PI*2
       );
@@ -2221,34 +2962,51 @@ function drawCrops(){
 
       if(c.type==="pumpkin"){
 
-        ctx.fillStyle="#e57b35";
+        ctx.fillStyle="#e17a34";
 
         ctx.beginPath();
 
         ctx.arc(
           x,
-          y+3,
-          12,
+          y+4,
+          13,
           0,
           Math.PI*2
         );
 
         ctx.fill();
 
+        ctx.strokeStyle="#9e522b";
+        ctx.lineWidth=2;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+          x,
+          y-8
+        );
+
+        ctx.lineTo(
+          x,
+          y+15
+        );
+
+        ctx.stroke();
+
       }else if(c.type==="corn"){
 
-        ctx.fillStyle="#e5c847";
+        ctx.fillStyle="#e2c342";
 
         ctx.fillRect(
           x-7,
-          y-9,
+          y-11,
           14,
-          22
+          24
         );
 
       }else{
 
-        ctx.fillStyle="#e19b48";
+        ctx.fillStyle="#e09c45";
 
         ctx.beginPath();
 
@@ -2262,17 +3020,31 @@ function drawCrops(){
 
         ctx.fill();
       }
+
+      /* ready sparkle */
+
+      ctx.fillStyle="#fff4a8";
+      ctx.font="bold 14px Arial";
+      ctx.textAlign="center";
+
+      ctx.fillText(
+        "✦",
+        x+15,
+        y-16
+      );
     }
+
+    /* watered */
 
     if(c.watered){
 
-      ctx.fillStyle="#74c8ee";
+      ctx.fillStyle="#80d6fa";
 
       ctx.beginPath();
 
       ctx.arc(
-        x+14,
-        y-15,
+        x+16,
+        y-16,
         4,
         0,
         Math.PI*2
@@ -2283,30 +3055,38 @@ function drawCrops(){
   });
 }
 
-/* =========================
-   HUMAN
-========================= */
+/* =====================================================
+   HUMAN CHARACTER
+===================================================== */
 
-function drawCharacter(x,y,opt,isPlayer=false){
+function drawHuman(
+  x,
+  y,
+  data,
+  isPlayer=false
+){
 
-  const px=x*TILE+24;
-  const py=y*TILE+29;
+  const px=x*TILE+TILE/2;
+  const py=y*TILE+TILE/2+5;
 
-  const step=
-    isPlayer&&player.moving
-    ? Math.sin(player.anim)*3
-    : 0;
+  let bob=0;
+
+  if(isPlayer&&player.moving){
+
+    bob=
+      Math.sin(player.anim)*2;
+  }
 
   /* shadow */
 
-  ctx.fillStyle="rgba(0,0,0,.2)";
+  ctx.fillStyle="rgba(0,0,0,.22)";
 
   ctx.beginPath();
 
   ctx.ellipse(
     px,
-    py+22,
-    17,
+    py+25,
+    19,
     7,
     0,
     0,
@@ -2315,119 +3095,205 @@ function drawCharacter(x,y,opt,isPlayer=false){
 
   ctx.fill();
 
+  /* body lower */
+
+  const legSwing=
+    isPlayer&&player.moving
+    ? Math.sin(player.anim)*4
+    : 0;
+
   /* back leg */
 
-  ctx.fillStyle=opt.pants;
-
-  ctx.fillRect(
-    px-10,
-    py+6,
-    9,
-    20+step
-  );
-
-  ctx.fillRect(
-    px+2,
-    py+6,
-    9,
-    20-step
-  );
-
-  /* shoes */
-
-  ctx.fillStyle="#352a23";
-
-  ctx.fillRect(
-    px-13,
-    py+24+step,
-    12,
-    6
-  );
-
-  ctx.fillRect(
-    px+2,
-    py+24-step,
-    12,
-    6
-  );
-
-  /* body */
-
-  ctx.fillStyle=opt.shirt;
+  ctx.fillStyle=data.pants;
 
   ctx.beginPath();
 
   ctx.roundRect(
-    px-15,
-    py-16,
-    30,
-    28,
-    8
+    px-11,
+    py+7,
+    10,
+    22+legSwing,
+    4
   );
 
   ctx.fill();
 
-  /* collar */
+  /* front leg */
 
-  ctx.fillStyle=opt.skin;
+  ctx.beginPath();
+
+  ctx.roundRect(
+    px+2,
+    py+7,
+    10,
+    22-legSwing,
+    4
+  );
+
+  ctx.fill();
+
+  /* shoes */
+
+  ctx.fillStyle="#322821";
+
+  ctx.beginPath();
+
+  ctx.roundRect(
+    px-14,
+    py+26+legSwing,
+    14,
+    7,
+    4
+  );
+
+  ctx.roundRect(
+    px+1,
+    py+26-legSwing,
+    14,
+    7,
+    4
+  );
+
+  ctx.fill();
+
+  /* torso */
+
+  ctx.fillStyle=data.shirt;
+
+  ctx.beginPath();
+
+  ctx.roundRect(
+    px-16,
+    py-18+bob,
+    32,
+    29,
+    9
+  );
+
+  ctx.fill();
+
+  /* shirt detail */
+
+  ctx.strokeStyle="rgba(255,255,255,.16)";
+  ctx.lineWidth=2;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    px,
+    py-15+bob
+  );
+
+  ctx.lineTo(
+    px,
+    py+7+bob
+  );
+
+  ctx.stroke();
+
+  /* neck */
+
+  ctx.fillStyle=data.skin;
 
   ctx.fillRect(
     px-5,
-    py-21,
+    py-24+bob,
     10,
-    7
+    8
   );
 
   /* arms */
 
-  ctx.fillStyle=opt.skin;
+  let armAngle=0;
 
-  ctx.fillRect(
-    px-21,
-    py-10,
-    7,
-    20
-  );
+  if(
+    isPlayer &&
+    player.actionTimer>0
+  ){
 
-  ctx.fillRect(
-    px+14,
-    py-10,
-    7,
-    20
-  );
+    const progress=
+      1-
+      player.actionTimer/
+      actionDuration(player.actionType);
 
-  /* hands */
+    armAngle=
+      Math.sin(
+        progress*Math.PI
+      );
+  }
 
-  ctx.beginPath();
+  /* normal arms */
 
-  ctx.arc(
-    px-17,
-    py+10,
-    4,
-    0,
-    Math.PI*2
-  );
+  ctx.save();
 
-  ctx.arc(
-    px+17,
-    py+10,
-    4,
-    0,
-    Math.PI*2
-  );
+  if(isPlayer&&player.actionTimer>0){
 
-  ctx.fill();
+    drawAnimatedToolArms(
+      px,
+      py+bob,
+      data,
+      armAngle
+    );
 
-  /* neck/head */
+  }else{
 
-  ctx.fillStyle=opt.skin;
+    ctx.fillStyle=data.skin;
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+      px-23,
+      py-13+bob,
+      8,
+      24,
+      4
+    );
+
+    ctx.roundRect(
+      px+15,
+      py-13+bob,
+      8,
+      24,
+      4
+    );
+
+    ctx.fill();
+
+    /* hands */
+
+    ctx.beginPath();
+
+    ctx.arc(
+      px-19,
+      py+12+bob,
+      5,
+      0,
+      Math.PI*2
+    );
+
+    ctx.arc(
+      px+19,
+      py+12+bob,
+      5,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  /* head */
+
+  ctx.fillStyle=data.skin;
 
   ctx.beginPath();
 
   ctx.arc(
     px,
-    py-31,
-    16,
+    py-38+bob,
+    17,
     0,
     Math.PI*2
   );
@@ -2439,17 +3305,17 @@ function drawCharacter(x,y,opt,isPlayer=false){
   ctx.beginPath();
 
   ctx.arc(
-    px-15,
-    py-31,
-    4,
+    px-16,
+    py-38+bob,
+    5,
     0,
     Math.PI*2
   );
 
   ctx.arc(
-    px+15,
-    py-31,
-    4,
+    px+16,
+    py-38+bob,
+    5,
     0,
     Math.PI*2
   );
@@ -2458,14 +3324,14 @@ function drawCharacter(x,y,opt,isPlayer=false){
 
   /* hair */
 
-  ctx.fillStyle=opt.hair;
+  ctx.fillStyle=data.hair;
 
   ctx.beginPath();
 
   ctx.arc(
     px,
-    py-37,
-    17,
+    py-45+bob,
+    18,
     Math.PI,
     Math.PI*2
   );
@@ -2473,11 +3339,62 @@ function drawCharacter(x,y,opt,isPlayer=false){
   ctx.fill();
 
   ctx.fillRect(
-    px-16,
-    py-39,
-    32,
-    9
+    px-17,
+    py-48+bob,
+    34,
+    11
   );
+
+  /* hair sides */
+
+  ctx.beginPath();
+
+  ctx.roundRect(
+    px-18,
+    py-45+bob,
+    7,
+    17,
+    3
+  );
+
+  ctx.roundRect(
+    px+11,
+    py-45+bob,
+    7,
+    17,
+    3
+  );
+
+  ctx.fill();
+
+  /* eyebrows */
+
+  ctx.strokeStyle="#4b3025";
+  ctx.lineWidth=2;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    px-10,
+    py-41+bob
+  );
+
+  ctx.lineTo(
+    px-3,
+    py-42+bob
+  );
+
+  ctx.moveTo(
+    px+3,
+    py-42+bob
+  );
+
+  ctx.lineTo(
+    px+10,
+    py-41+bob
+  );
+
+  ctx.stroke();
 
   /* eyes */
 
@@ -2487,51 +3404,37 @@ function drawCharacter(x,y,opt,isPlayer=false){
 
   ctx.arc(
     px-6,
-    py-31,
-    2,
+    py-36+bob,
+    2.3,
     0,
     Math.PI*2
   );
 
   ctx.arc(
     px+6,
-    py-31,
-    2,
+    py-36+bob,
+    2.3,
     0,
     Math.PI*2
   );
 
   ctx.fill();
 
-  /* eyebrows */
-
-  ctx.strokeStyle="#4b3024";
-  ctx.lineWidth=1.5;
-
-  ctx.beginPath();
-
-  ctx.moveTo(px-9,py-36);
-  ctx.lineTo(px-3,py-37);
-
-  ctx.moveTo(px+3,py-37);
-  ctx.lineTo(px+9,py-36);
-
-  ctx.stroke();
-
   /* nose */
 
-  ctx.strokeStyle="#915e47";
+  ctx.strokeStyle="#945f49";
+  ctx.lineWidth=1.4;
 
   ctx.beginPath();
 
   ctx.moveTo(
     px,
-    py-29
+    py-34+bob
   );
 
   ctx.lineTo(
     px+2,
-    py-25
+    py-29+bob
   );
 
   ctx.stroke();
@@ -2542,7 +3445,7 @@ function drawCharacter(x,y,opt,isPlayer=false){
 
   ctx.arc(
     px,
-    py-23,
+    py-26+bob,
     4,
     0,
     Math.PI
@@ -2552,16 +3455,16 @@ function drawCharacter(x,y,opt,isPlayer=false){
 
   /* hat */
 
-  if(opt.hat){
+  if(data.hat){
 
-    ctx.fillStyle="#d6ac48";
+    ctx.fillStyle="#d5aa4b";
 
     ctx.beginPath();
 
     ctx.ellipse(
       px,
-      py-47,
-      24,
+      py-53+bob,
+      25,
       7,
       0,
       0,
@@ -2571,18 +3474,18 @@ function drawCharacter(x,y,opt,isPlayer=false){
     ctx.fill();
 
     ctx.fillRect(
-      px-12,
-      py-57,
-      24,
-      13
+      px-13,
+      py-64+bob,
+      26,
+      14
     );
 
-    ctx.fillStyle="#8d6830";
+    ctx.fillStyle="#8b662f";
 
     ctx.fillRect(
-      px-12,
-      py-48,
-      24,
+      px-13,
+      py-52+bob,
+      26,
       4
     );
   }
@@ -2594,42 +3497,462 @@ function drawCharacter(x,y,opt,isPlayer=false){
   ctx.textAlign="center";
 
   ctx.fillText(
-    opt.name,
+    data.name,
     px,
-    py-56
+    py-66+bob
   );
 }
 
-/* =========================
+/* =====================================================
+   TOOL ANIMATION
+===================================================== */
+
+function actionDuration(type){
+
+  return{
+
+    hoe:360,
+    water:500,
+    harvest:360,
+    axe:420,
+    pickaxe:420,
+    seed:360
+
+  }[type]||350;
+}
+
+function drawAnimatedToolArms(
+  px,
+  py,
+  data,
+  swing
+){
+
+  const type=player.actionType;
+
+  /* arm movement */
+
+  ctx.strokeStyle=data.skin;
+  ctx.lineWidth=8;
+  ctx.lineCap="round";
+
+  const dir=
+    player.dir;
+
+  let handX=px;
+  let handY=py-2;
+
+  if(dir==="down"){
+    handX=px+18;
+    handY=py+3;
+  }
+
+  if(dir==="up"){
+    handX=px-5;
+    handY=py-8;
+  }
+
+  if(dir==="left"){
+    handX=px-18;
+    handY=py-3;
+  }
+
+  if(dir==="right"){
+    handX=px+18;
+    handY=py-3;
+  }
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    px-11,
+    py-10
+  );
+
+  ctx.lineTo(
+    handX,
+    handY
+  );
+
+  ctx.stroke();
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    px+11,
+    py-10
+  );
+
+  ctx.lineTo(
+    handX,
+    handY
+  );
+
+  ctx.stroke();
+
+  /* hand */
+
+  ctx.fillStyle=data.skin;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    handX,
+    handY,
+    5,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  /* actual tool */
+
+  drawToolInHand(
+    handX,
+    handY,
+    type,
+    swing
+  );
+}
+
+function drawToolInHand(
+  x,
+  y,
+  type,
+  swing
+){
+
+  let angle=0;
+
+  if(
+    player.dir==="left"
+  )angle=-.7;
+
+  if(
+    player.dir==="right"
+  )angle=.7;
+
+  if(
+    player.dir==="up"
+  )angle=0;
+
+  if(
+    player.dir==="down"
+  )angle=Math.PI;
+
+  ctx.save();
+
+  ctx.translate(x,y);
+
+  if(type==="hoe"){
+
+    angle+=
+      (swing-.5)*1.9;
+
+    ctx.rotate(angle);
+
+    /* wooden handle */
+
+    ctx.strokeStyle="#70472a";
+    ctx.lineWidth=5;
+    ctx.lineCap="round";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      20
+    );
+
+    ctx.lineTo(
+      0,
+      -28
+    );
+
+    ctx.stroke();
+
+    /* metal head */
+
+    ctx.strokeStyle="#777d7c";
+    ctx.lineWidth=5;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      -13,
+      -27
+    );
+
+    ctx.lineTo(
+      13,
+      -27
+    );
+
+    ctx.stroke();
+
+  }else if(type==="axe"){
+
+    angle+=
+      (swing-.5)*2.1;
+
+    ctx.rotate(angle);
+
+    ctx.strokeStyle="#70472a";
+    ctx.lineWidth=5;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      24
+    );
+
+    ctx.lineTo(
+      0,
+      -27
+    );
+
+    ctx.stroke();
+
+    ctx.fillStyle="#8e9490";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      -2,
+      -30
+    );
+
+    ctx.lineTo(
+      15,
+      -24
+    );
+
+    ctx.lineTo(
+      12,
+      -8
+    );
+
+    ctx.lineTo(
+      -2,
+      -16
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+  }else if(type==="pickaxe"){
+
+    angle+=
+      (swing-.5)*2.2;
+
+    ctx.rotate(angle);
+
+    ctx.strokeStyle="#70472a";
+    ctx.lineWidth=5;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      24
+    );
+
+    ctx.lineTo(
+      0,
+      -25
+    );
+
+    ctx.stroke();
+
+    ctx.strokeStyle="#858b89";
+    ctx.lineWidth=6;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      -17,
+      -25
+    );
+
+    ctx.quadraticCurveTo(
+      0,
+      -36,
+      17,
+      -25
+    );
+
+    ctx.stroke();
+
+  }else if(type==="water"){
+
+    ctx.rotate(
+      angle+
+      (swing-.5)*.5
+    );
+
+    ctx.fillStyle="#5799bd";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+      -10,
+      -10,
+      20,
+      28,
+      5
+    );
+
+    ctx.fill();
+
+    ctx.strokeStyle="#d8edf5";
+    ctx.lineWidth=3;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      8,
+      -2
+    );
+
+    ctx.lineTo(
+      23,
+      -14
+    );
+
+    ctx.stroke();
+
+    if(swing>.35){
+
+      ctx.strokeStyle="#8edcff";
+      ctx.lineWidth=2;
+
+      for(let i=0;i<5;i++){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+          22,
+          -14
+        );
+
+        ctx.lineTo(
+          32+i*2,
+          -9+i*3
+        );
+
+        ctx.stroke();
+      }
+    }
+
+  }else if(type==="harvest"){
+
+    angle+=
+      (swing-.5)*1.5;
+
+    ctx.rotate(angle);
+
+    ctx.strokeStyle="#70472a";
+    ctx.lineWidth=4;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      22
+    );
+
+    ctx.lineTo(
+      0,
+      -24
+    );
+
+    ctx.stroke();
+
+    ctx.strokeStyle="#b6c1bd";
+    ctx.lineWidth=5;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      -23,
+      10,
+      Math.PI*.1,
+      Math.PI*.9
+    );
+
+    ctx.stroke();
+
+  }else if(type==="seed"){
+
+    ctx.fillStyle="#a36e39";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      8,
+      8,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle="#6fa84c";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      -4,
+      7,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/* =====================================================
    PLAYER
-========================= */
+===================================================== */
 
 function drawPlayer(){
 
-  drawCharacter(
+  drawHuman(
+
     player.x,
     player.y,
+
     {
       name:"RAKA",
-      skin:"#c88762",
-      hair:"#392319",
-      shirt:"#4c934d",
-      pants:"#536373",
+      skin:"#c88663",
+      hair:"#3a2419",
+      shirt:"#4c914b",
+      pants:"#4e6072",
       hat:true
     },
+
     true
   );
 }
 
-/* =========================
+/* =====================================================
    NPC
-========================= */
+===================================================== */
 
-function drawNPC(){
+function drawNPCs(){
 
   npcs.forEach(n=>{
 
-    drawCharacter(
+    drawHuman(
       n.x,
       n.y,
       {
@@ -2644,16 +3967,26 @@ function drawNPC(){
   });
 }
 
-/* =========================
+/* =====================================================
    ANIMALS
-========================= */
+===================================================== */
 
 function drawAnimals(){
 
   animals.forEach(a=>{
 
-    const x=a.x*TILE+24;
-    const y=a.y*TILE+31;
+    a.anim+=.025;
+
+    const x=
+      a.x*TILE+
+      TILE/2;
+
+    const y=
+      a.y*TILE+
+      TILE/2+
+      Math.sin(a.anim)*1.5;
+
+    /* shadow */
 
     ctx.fillStyle="rgba(0,0,0,.18)";
 
@@ -2661,8 +3994,8 @@ function drawAnimals(){
 
     ctx.ellipse(
       x,
-      y+9,
-      18,
+      y+15,
+      19,
       6,
       0,
       0,
@@ -2673,14 +4006,16 @@ function drawAnimals(){
 
     if(a.type==="chicken"){
 
-      ctx.fillStyle="#f3edda";
+      /* body */
+
+      ctx.fillStyle="#f1ebd8";
 
       ctx.beginPath();
 
       ctx.ellipse(
         x,
         y,
-        17,
+        18,
         13,
         0,
         0,
@@ -2689,25 +4024,49 @@ function drawAnimals(){
 
       ctx.fill();
 
+      /* wing */
+
+      ctx.fillStyle="#d6d0bc";
+
       ctx.beginPath();
 
-      ctx.arc(
-        x+13,
-        y-9,
-        9,
+      ctx.ellipse(
+        x-3,
+        y+1,
+        10,
+        7,
+        -.3,
         0,
         Math.PI*2
       );
 
       ctx.fill();
 
-      ctx.fillStyle="#d64e3f";
+      /* head */
+
+      ctx.fillStyle="#f1ebd8";
 
       ctx.beginPath();
 
       ctx.arc(
         x+14,
-        y-17,
+        y-10,
+        10,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      /* comb */
+
+      ctx.fillStyle="#d94f42";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x+13,
+        y-19,
         4,
         0,
         Math.PI*2
@@ -2715,13 +4074,40 @@ function drawAnimals(){
 
       ctx.fill();
 
-      ctx.fillStyle="#222";
+      /* beak */
+
+      ctx.fillStyle="#d9a947";
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x+22,
+        y-10
+      );
+
+      ctx.lineTo(
+        x+31,
+        y-7
+      );
+
+      ctx.lineTo(
+        x+22,
+        y-4
+      );
+
+      ctx.closePath();
+
+      ctx.fill();
+
+      /* eye */
+
+      ctx.fillStyle="#151515";
 
       ctx.beginPath();
 
       ctx.arc(
-        x+16,
-        y-10,
+        x+17,
+        y-12,
         2,
         0,
         Math.PI*2
@@ -2731,15 +4117,17 @@ function drawAnimals(){
 
     }else{
 
-      ctx.fillStyle="#eee8d7";
+      /* cow */
+
+      ctx.fillStyle="#eee8d8";
 
       ctx.beginPath();
 
       ctx.ellipse(
         x,
         y,
-        25,
-        15,
+        27,
+        16,
         0,
         0,
         Math.PI*2
@@ -2747,12 +4135,36 @@ function drawAnimals(){
 
       ctx.fill();
 
-      ctx.fillStyle="#70503c";
+      /* patches */
+
+      ctx.fillStyle="#6e5344";
 
       ctx.beginPath();
 
       ctx.arc(
-        x+21,
+        x-9,
+        y-5,
+        8,
+        0,
+        Math.PI*2
+      );
+
+      ctx.arc(
+        x+8,
+        y+5,
+        7,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      /* head */
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x+25,
         y-8,
         13,
         0,
@@ -2761,13 +4173,40 @@ function drawAnimals(){
 
       ctx.fill();
 
-      ctx.fillStyle="#222";
+      /* horn */
+
+      ctx.fillStyle="#aa9a76";
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x+21,
+        y-19
+      );
+
+      ctx.lineTo(
+        x+15,
+        y-27
+      );
+
+      ctx.lineTo(
+        x+25,
+        y-22
+      );
+
+      ctx.closePath();
+
+      ctx.fill();
+
+      /* eye */
+
+      ctx.fillStyle="#181818";
 
       ctx.beginPath();
 
       ctx.arc(
-        x+25,
-        y-10,
+        x+29,
+        y-11,
         2,
         0,
         Math.PI*2
@@ -2776,35 +4215,41 @@ function drawAnimals(){
       ctx.fill();
     }
 
+    /* name */
+
     ctx.fillStyle="#fff";
-    ctx.font="10px Arial";
+    ctx.font="bold 9px Arial";
     ctx.textAlign="center";
 
     ctx.fillText(
       a.name,
       x,
-      y-24
+      y-29
     );
   });
 }
 
-/* =========================
+/* =====================================================
    WEATHER
-========================= */
+===================================================== */
 
 function drawWeather(){
 
   if(weather==="Hujan"){
 
-    ctx.strokeStyle="rgba(180,220,255,.5)";
+    ctx.strokeStyle="rgba(180,220,255,.55)";
     ctx.lineWidth=1;
 
-    const t=performance.now()/4;
+    const t=
+      performance.now()/3;
 
-    for(let i=0;i<170;i++){
+    for(let i=0;i<190;i++){
 
-      const x=(i*83+t)%W;
-      const y=(i*47+t*1.7)%H;
+      const x=
+        (i*83+t)%W;
+
+      const y=
+        (i*47+t*1.7)%H;
 
       ctx.beginPath();
 
@@ -2815,16 +4260,21 @@ function drawWeather(){
 
       ctx.lineTo(
         x-5,
-        y+14
+        y+15
       );
 
       ctx.stroke();
     }
   }
 
-  if(hour>=19||hour<6){
+  if(
+    hour>=19||
+    hour<6
+  ){
 
-    ctx.fillStyle="rgba(7,13,25,.48)";
+    ctx.fillStyle=
+      "rgba(6,12,24,.45)";
+
     ctx.fillRect(
       0,
       0,
@@ -2834,9 +4284,90 @@ function drawWeather(){
   }
 }
 
-/* =========================
+/* =====================================================
+   ACTION TIMER
+===================================================== */
+
+function updateAction(dt){
+
+  if(player.actionTimer<=0)return;
+
+  player.actionTimer-=dt*1000;
+
+  player.actionFrame+=
+    dt*5;
+
+  if(player.actionTimer<=0){
+
+    player.actionTimer=0;
+    player.actionType="";
+    player.actionFrame=0;
+  }
+}
+
+/* =====================================================
+   GAME UPDATE
+===================================================== */
+
+function update(dt){
+
+  if(!running)return;
+
+  updateAction(dt);
+  updateEffects(dt);
+
+  let dx=0;
+  let dy=0;
+
+  if(keys["w"]||keys["arrowup"])
+    dy=-1;
+
+  if(keys["s"]||keys["arrowdown"])
+    dy=1;
+
+  if(keys["a"]||keys["arrowleft"])
+    dx=-1;
+
+  if(keys["d"]||keys["arrowright"])
+    dx=1;
+
+  if(
+    dx!==0||
+    dy!==0
+  ){
+
+    if(
+      dx!==0&&
+      dy!==0
+    ){
+
+      dx*=.707;
+      dy*=.707;
+    }
+
+    movePlayer(
+      dx*2.8*dt,
+      dy*2.8*dt
+    );
+
+    timeAccumulator+=dt;
+
+    if(timeAccumulator>=1){
+
+      advanceTime(2);
+
+      timeAccumulator=0;
+    }
+
+  }else{
+
+    player.moving=false;
+  }
+}
+
+/* =====================================================
    RENDER
-========================= */
+===================================================== */
 
 function render(){
 
@@ -2861,71 +4392,26 @@ function render(){
   drawCrops();
   drawResources();
   drawAnimals();
-  drawNPC();
+  drawNPCs();
   drawPlayer();
+  drawEffects();
 
   ctx.restore();
 
   drawWeather();
 }
 
-/* =========================
-   GAME UPDATE
-========================= */
-
-let running=false;
-let last=performance.now();
-let clockCounter=0;
-
-function update(dt){
-
-  if(!running)return;
-
-  let dx=0;
-  let dy=0;
-
-  if(keys["w"]||keys["arrowup"])dy=-1;
-  if(keys["s"]||keys["arrowdown"])dy=1;
-  if(keys["a"]||keys["arrowleft"])dx=-1;
-  if(keys["d"]||keys["arrowright"])dx=1;
-
-  if(dx!==0||dy!==0){
-
-    if(dx!==0&&dy!==0){
-
-      dx*=.707;
-      dy*=.707;
-    }
-
-    move(
-      dx*2.7*dt,
-      dy*2.7*dt
-    );
-
-    clockCounter+=dt;
-
-    if(clockCounter>=1){
-
-      advanceTime(2);
-      clockCounter=0;
-    }
-
-  }else{
-
-    player.moving=false;
-  }
-}
-
-/* =========================
-   LOOP
-========================= */
+/* =====================================================
+   MAIN LOOP
+===================================================== */
 
 function loop(now){
 
-  const dt=Math.min(
-    .05,
-    (now-last)/1000
-  );
+  const dt=
+    Math.min(
+      .05,
+      (now-last)/1000
+    );
 
   last=now;
 
@@ -2938,14 +4424,14 @@ function loop(now){
 
 requestAnimationFrame(loop);
 
-/* =========================
+/* =====================================================
    START
-========================= */
+===================================================== */
 
-function startNew(){
+function startNewGame(){
 
-  player.x=8;
-  player.y=14;
+  player.x=9;
+  player.y=16;
   player.dir="down";
   player.energy=100;
   player.selectedSeed="turnip";
@@ -2971,12 +4457,12 @@ function startNew(){
 
   randomWeather();
 
-  save();
+  saveGame();
 
-  start();
+  startGame();
 }
 
-function start(){
+function startGame(){
 
   running=true;
 
@@ -2986,92 +4472,128 @@ function start(){
 
   updateHUD();
 
-  message(
+  showMessage(
     "🌱 Selamat datang di ALFA FARM LIFE!"
   );
 }
 
-document.getElementById("newGame").onclick=startNew;
+document.getElementById(
+  "newGame"
+).onclick=startNewGame;
 
-document.getElementById("continue").onclick=()=>{
+document.getElementById(
+  "continueGame"
+).onclick=()=>{
 
-  if(load()){
+  if(loadGame()){
 
-    start();
+    startGame();
 
-    message(
+    showMessage(
       "💾 Save berhasil dimuat."
     );
 
   }else{
 
-    startNew();
+    startNewGame();
   }
 };
 
-/* =========================
-   MOBILE CONTROLS
-========================= */
+/* =====================================================
+   MOBILE
+===================================================== */
 
-function mobileButton(id,dx,dy){
+function setupMoveButton(
+  id,
+  dx,
+  dy
+){
 
-  const b=document.getElementById(id);
+  const button=
+    document.getElementById(id);
 
-  let timer;
+  let interval=null;
 
-  const down=e=>{
+  const start=e=>{
 
     e.preventDefault();
 
-    move(dx,dy);
+    movePlayer(dx,dy);
 
-    timer=setInterval(
-      ()=>move(dx,dy),
-      70
+    clearInterval(interval);
+
+    interval=setInterval(
+      ()=>movePlayer(dx,dy),
+      80
     );
   };
 
-  const up=()=>{
+  const stop=e=>{
 
-    clearInterval(timer);
+    if(e)e.preventDefault();
+
+    clearInterval(interval);
+    interval=null;
   };
 
-  b.addEventListener(
+  button.addEventListener(
     "pointerdown",
-    down
+    start
   );
 
-  b.addEventListener(
+  button.addEventListener(
     "pointerup",
-    up
+    stop
   );
 
-  b.addEventListener(
-    "pointerleave",
-    up
-  );
-
-  b.addEventListener(
+  button.addEventListener(
     "pointercancel",
-    up
+    stop
+  );
+
+  button.addEventListener(
+    "pointerleave",
+    stop
   );
 }
 
-mobileButton("u",0,-1);
-mobileButton("d",0,1);
-mobileButton("l",-1,0);
-mobileButton("r",1,0);
+setupMoveButton(
+  "up",
+  0,
+  -1
+);
 
-document.getElementById("action").onclick=action;
+setupMoveButton(
+  "down",
+  0,
+  1
+);
 
-/* =========================
+setupMoveButton(
+  "left",
+  -1,
+  0
+);
+
+setupMoveButton(
+  "right",
+  1,
+  0
+);
+
+document.getElementById(
+  "action"
+).onclick=doAction;
+
+/* =====================================================
    AUTOSAVE
-========================= */
+===================================================== */
 
 setInterval(()=>{
 
   if(running){
-    save();
+
+    saveGame();
   }
 
 },15000);
