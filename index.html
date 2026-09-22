@@ -1,0 +1,3037 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#14251a">
+<title>ALFA FARM LIFE V1.0</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#0c1510;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  color:#fff;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+#game{
+  position:fixed;
+  inset:0;
+  display:none;
+  background:#111;
+}
+
+canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  image-rendering:auto;
+}
+
+#menu{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(82,170,91,.22),transparent 32%),
+    linear-gradient(135deg,#0b1510,#172a1b 50%,#0a110d);
+}
+
+.menuBox{
+  width:min(92%,520px);
+  padding:35px 28px;
+  border:1px solid rgba(165,230,155,.35);
+  border-radius:26px;
+  background:rgba(8,20,12,.88);
+  box-shadow:0 25px 80px rgba(0,0,0,.6);
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+
+.logo{
+  font-size:clamp(36px,8vw,70px);
+  font-weight:900;
+  letter-spacing:3px;
+  color:#b7f59d;
+  text-shadow:0 4px 0 #315d34,0 0 30px rgba(140,255,130,.35);
+}
+
+.subtitle{
+  margin-top:8px;
+  color:#d8e8d1;
+  font-size:15px;
+}
+
+.farmIcon{
+  font-size:70px;
+  margin:15px 0 5px;
+}
+
+.menuBtn{
+  width:100%;
+  padding:15px;
+  margin-top:12px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(180deg,#74bd63,#438844);
+  color:white;
+  font-weight:800;
+  box-shadow:0 5px 0 #285c2c;
+}
+
+.menuBtn:active{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #285c2c;
+}
+
+.menuBtn.secondary{
+  background:#27392a;
+  box-shadow:0 5px 0 #182319;
+}
+
+.note{
+  margin-top:18px;
+  font-size:12px;
+  color:#9fb09f;
+  line-height:1.5;
+}
+
+#hud{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:5;
+}
+
+.topbar{
+  position:absolute;
+  top:10px;
+  left:10px;
+  right:10px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.panel{
+  background:rgba(12,22,14,.86);
+  border:1px solid rgba(190,235,170,.25);
+  border-radius:13px;
+  padding:9px 12px;
+  box-shadow:0 7px 25px rgba(0,0,0,.25);
+}
+
+.stats{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.stat{
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.money{
+  color:#ffe27b;
+  font-weight:900;
+}
+
+.energyBar{
+  width:105px;
+  height:9px;
+  margin-top:4px;
+  border-radius:8px;
+  background:#263328;
+  overflow:hidden;
+}
+
+.energyFill{
+  height:100%;
+  width:100%;
+  background:#7cdb68;
+  transition:.2s;
+}
+
+#message{
+  position:absolute;
+  left:50%;
+  top:78px;
+  transform:translateX(-50%);
+  max-width:85%;
+  background:rgba(12,22,14,.92);
+  border:1px solid rgba(190,235,170,.25);
+  border-radius:14px;
+  padding:10px 15px;
+  font-size:14px;
+  text-align:center;
+  opacity:0;
+  transition:.25s;
+}
+
+#message.show{
+  opacity:1;
+}
+
+#bottomUI{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.tools{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  pointer-events:auto;
+}
+
+.tool{
+  min-width:58px;
+  height:55px;
+  padding:5px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:12px;
+  color:white;
+  background:rgba(13,24,16,.9);
+  font-size:11px;
+  font-weight:800;
+}
+
+.tool span{
+  display:block;
+  font-size:22px;
+  margin-bottom:2px;
+}
+
+.tool.active{
+  border:2px solid #b9ed9e;
+  background:#31563a;
+}
+
+.action{
+  pointer-events:auto;
+  min-width:110px;
+  height:55px;
+  border:0;
+  border-radius:13px;
+  background:#e5a84c;
+  color:#21170a;
+  font-weight:900;
+}
+
+#dialog{
+  position:absolute;
+  left:50%;
+  bottom:85px;
+  transform:translateX(-50%);
+  width:min(92%,650px);
+  display:none;
+  pointer-events:auto;
+  z-index:10;
+}
+
+.dialogBox{
+  position:relative;
+  display:flex;
+  gap:14px;
+  background:#f2e5c7;
+  color:#26301f;
+  border:4px solid #714f2d;
+  border-radius:17px;
+  padding:15px;
+  box-shadow:0 12px 40px rgba(0,0,0,.55);
+}
+
+.dialogPortrait{
+  width:75px;
+  height:75px;
+  flex:none;
+  border-radius:12px;
+  background:#b4d88d;
+  border:2px solid #714f2d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.dialogText{
+  flex:1;
+}
+
+.dialogName{
+  font-size:17px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+.dialogLine{
+  line-height:1.45;
+  font-size:14px;
+}
+
+.dialogClose{
+  position:absolute;
+  right:8px;
+  bottom:7px;
+  border:0;
+  border-radius:8px;
+  background:#714f2d;
+  color:#fff;
+  padding:6px 12px;
+  font-weight:800;
+}
+
+#inventory{
+  position:absolute;
+  z-index:15;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(92%,600px);
+  max-height:80vh;
+  overflow:auto;
+  display:none;
+  background:rgba(11,20,13,.97);
+  border:1px solid rgba(190,235,170,.35);
+  border-radius:20px;
+  padding:20px;
+  pointer-events:auto;
+}
+
+.invTitle{
+  font-size:24px;
+  font-weight:900;
+  color:#c8f4b1;
+  margin-bottom:15px;
+}
+
+.invGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
+  gap:10px;
+}
+
+.item{
+  min-height:95px;
+  padding:10px;
+  border-radius:13px;
+  background:#1b2b1e;
+  border:1px solid #304735;
+  text-align:center;
+}
+
+.itemIcon{
+  font-size:32px;
+}
+
+.itemName{
+  font-size:12px;
+  margin-top:4px;
+}
+
+.itemQty{
+  color:#b8e7a4;
+  font-weight:900;
+  margin-top:3px;
+}
+
+.closePanel{
+  margin-top:15px;
+  width:100%;
+  padding:11px;
+  border:0;
+  border-radius:11px;
+  background:#456d47;
+  color:#fff;
+  font-weight:900;
+}
+
+#shop{
+  position:absolute;
+  z-index:16;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(92%,600px);
+  max-height:82vh;
+  overflow:auto;
+  display:none;
+  background:#fbf1d7;
+  color:#28301e;
+  border:4px solid #79502d;
+  border-radius:20px;
+  padding:20px;
+  pointer-events:auto;
+}
+
+.shopTitle{
+  font-size:25px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+
+.shopSub{
+  font-size:13px;
+  margin-bottom:14px;
+}
+
+.shopRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px;
+  margin-bottom:8px;
+  border-radius:12px;
+  background:#ead9b7;
+}
+
+.shopInfo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.shopEmoji{
+  font-size:30px;
+}
+
+.shopBuy{
+  border:0;
+  padding:9px 13px;
+  border-radius:9px;
+  background:#557d46;
+  color:white;
+  font-weight:900;
+}
+
+#touch{
+  position:absolute;
+  z-index:7;
+  left:12px;
+  bottom:80px;
+  width:145px;
+  height:145px;
+  pointer-events:none;
+}
+
+.dpad{
+  position:relative;
+  width:100%;
+  height:100%;
+  opacity:.8;
+}
+
+.dpad button{
+  position:absolute;
+  width:48px;
+  height:48px;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;
+  background:rgba(15,30,18,.82);
+  color:#fff;
+  font-size:23px;
+  pointer-events:auto;
+  touch-action:none;
+}
+
+.up{left:49px;top:0}
+.down{left:49px;bottom:0}
+.left{left:0;top:49px}
+.right{right:0;top:49px}
+
+#help{
+  position:absolute;
+  z-index:12;
+  right:12px;
+  bottom:80px;
+  pointer-events:none;
+  max-width:230px;
+  text-align:right;
+  font-size:11px;
+  color:rgba(255,255,255,.75);
+}
+
+@media(min-width:800px){
+  #touch{
+    display:none;
+  }
+}
+
+@media(max-width:600px){
+  .topbar{
+    font-size:11px;
+  }
+
+  .panel{
+    padding:7px 8px;
+  }
+
+  .stats{
+    gap:7px;
+  }
+
+  .tool{
+    min-width:51px;
+    height:49px;
+  }
+
+  .tool span{
+    font-size:19px;
+  }
+
+  .action{
+    min-width:92px;
+    height:49px;
+  }
+
+  #bottomUI{
+    bottom:8px;
+  }
+
+  #help{
+    display:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+  <div class="menuBox">
+    <div class="farmIcon">🌾</div>
+    <div class="logo">ALFA FARM LIFE</div>
+    <div class="subtitle">Farming • Livestock • Village Life</div>
+
+    <button class="menuBtn" id="newGameBtn">🌱 MULAI PERMAINAN</button>
+    <button class="menuBtn secondary" id="continueBtn">💾 LANJUTKAN</button>
+
+    <div class="note">
+      Dunia original ALFA FARM LIFE.<br>
+      Bangun kebun, rawat hewan, kenali warga desa,
+      dan kembangkan kehidupan pertanianmu.
+    </div>
+  </div>
+</div>
+
+<div id="game">
+
+  <canvas id="canvas"></canvas>
+
+  <div id="hud">
+
+    <div class="topbar">
+
+      <div class="panel">
+        <div class="stats">
+          <div class="stat">📅 <b id="dayText">Hari 1</b></div>
+          <div class="stat">☀️ <b id="seasonText">Musim Semi</b></div>
+          <div class="stat">🕐 <b id="timeText">06:00</b></div>
+          <div class="stat money">💰 <b id="moneyText">500</b></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="stat">❤️ Energi <b id="energyText">100</b></div>
+        <div class="energyBar">
+          <div class="energyFill" id="energyFill"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="message"></div>
+
+    <div id="dialog">
+      <div class="dialogBox">
+        <div class="dialogPortrait" id="dialogPortrait"></div>
+        <div class="dialogText">
+          <div class="dialogName" id="dialogName"></div>
+          <div class="dialogLine" id="dialogLine"></div>
+        </div>
+        <button class="dialogClose" id="dialogClose">Tutup</button>
+      </div>
+    </div>
+
+    <div id="inventory">
+      <div class="invTitle">🎒 INVENTORY</div>
+      <div class="invGrid" id="invGrid"></div>
+      <button class="closePanel" id="closeInventory">Tutup Inventory</button>
+    </div>
+
+    <div id="shop">
+      <div class="shopTitle">🏪 TOKO DESA</div>
+      <div class="shopSub">Bibit murah untuk mengembangkan kebunmu.</div>
+      <div id="shopRows"></div>
+      <button class="closePanel" id="closeShop">Keluar Toko</button>
+    </div>
+
+    <div id="bottomUI">
+
+      <div class="tools">
+
+        <button class="tool active" data-tool="hoe">
+          <span>⛏️</span>Cangkul
+        </button>
+
+        <button class="tool" data-tool="seed">
+          <span>🌱</span>Tanam
+        </button>
+
+        <button class="tool" data-tool="water">
+          <span>💧</span>Siram
+        </button>
+
+        <button class="tool" data-tool="harvest">
+          <span>🌾</span>Panen
+        </button>
+
+        <button class="tool" data-tool="axe">
+          <span>🪓</span>Kapak
+        </button>
+
+        <button class="tool" data-tool="pickaxe">
+          <span>🔨</span>Pick
+        </button>
+
+      </div>
+
+      <button class="action" id="actionBtn">INTERAKSI</button>
+
+    </div>
+
+    <div id="touch">
+      <div class="dpad">
+        <button class="up" data-dir="up">▲</button>
+        <button class="down" data-dir="down">▼</button>
+        <button class="left" data-dir="left">◀</button>
+        <button class="right" data-dir="right">▶</button>
+      </div>
+    </div>
+
+    <div id="help">
+      WASD / Arrow = bergerak<br>
+      E = interaksi<br>
+      I = inventory<br>
+      1-6 = alat
+    </div>
+
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   ALFA FARM LIFE V1.0
+   ORIGINAL FARMING LIFE SIM
+   ========================================================= */
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let W = 0;
+let H = 0;
+let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+function resize(){
+  W = window.innerWidth;
+  H = window.innerHeight;
+
+  canvas.width = Math.floor(W * DPR);
+  canvas.height = Math.floor(H * DPR);
+  canvas.style.width = W + "px";
+  canvas.style.height = H + "px";
+
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+
+window.addEventListener("resize",resize);
+resize();
+
+/* =========================================================
+   GAME DATA
+   ========================================================= */
+
+const TILE = 48;
+const MAP_W = 38;
+const MAP_H = 28;
+
+const game = {
+  running:false,
+  day:1,
+  season:0,
+  year:1,
+  hour:6,
+  minute:0,
+  weather:"sunny",
+  money:500,
+  energy:100,
+  maxEnergy:100,
+  selectedTool:"hoe",
+  cameraX:0,
+  cameraY:0,
+  messageTimer:0,
+  lastTime:0,
+  dayTimer:0,
+  dialogOpen:false,
+  inventoryOpen:false,
+  shopOpen:false
+};
+
+const seasons = [
+  "Musim Semi",
+  "Musim Panas",
+  "Musim Gugur",
+  "Musim Dingin"
+];
+
+const weatherNames = {
+  sunny:"Cerah",
+  rain:"Hujan"
+};
+
+const crops = {
+  turnip:{
+    name:"Lobak",
+    icon:"🥕",
+    seed:"seedTurnip",
+    days:3,
+    price:55
+  },
+  corn:{
+    name:"Jagung",
+    icon:"🌽",
+    seed:"seedCorn",
+    days:5,
+    price:90
+  },
+  pumpkin:{
+    name:"Labu",
+    icon:"🎃",
+    seed:"seedPumpkin",
+    days:7,
+    price:150
+  }
+};
+
+const items = {
+  seedTurnip:{name:"Bibit Lobak",icon:"🌱"},
+  seedCorn:{name:"Bibit Jagung",icon:"🌱"},
+  seedPumpkin:{name:"Bibit Labu",icon:"🌱"},
+  turnip:{name:"Lobak",icon:"🥕"},
+  corn:{name:"Jagung",icon:"🌽"},
+  pumpkin:{name:"Labu",icon:"🎃"},
+  egg:{name:"Telur Ayam",icon:"🥚"},
+  wood:{name:"Kayu",icon:"🪵"},
+  stone:{name:"Batu",icon:"🪨"}
+};
+
+let inventory = {
+  seedTurnip:10,
+  seedCorn:5,
+  seedPumpkin:2,
+  turnip:0,
+  corn:0,
+  pumpkin:0,
+  egg:0,
+  wood:0,
+  stone:0
+};
+
+/* =========================================================
+   PLAYER
+   ========================================================= */
+
+const player = {
+  x:9,
+  y:13,
+  dir:"down",
+  speed:4.2,
+  moving:false,
+  frame:0
+};
+
+/* =========================================================
+   NPC
+   ========================================================= */
+
+const npcs = [
+  {
+    id:"sari",
+    name:"Sari",
+    x:17,
+    y:9,
+    hair:"#382516",
+    shirt:"#e66d78",
+    pants:"#3d527b",
+    skin:"#f0bd8e",
+    role:"Pemilik Toko",
+    dialogues:[
+      "Halo, Raka! Selamat datang di desa kita.",
+      "Kalau butuh bibit, datang saja ke tokoku.",
+      "Tanaman yang rajin disiram biasanya tumbuh lebih baik."
+    ]
+  },
+  {
+    id:"bima",
+    name:"Bima",
+    x:25,
+    y:15,
+    hair:"#1d1714",
+    shirt:"#4f89b7",
+    pants:"#4d453a",
+    skin:"#c98f63",
+    role:"Peternak",
+    dialogues:[
+      "Pagi, Raka! Ayam-ayamku sudah makan.",
+      "Telur ayam bisa kamu jual untuk mendapatkan uang.",
+      "Kalau mau beternak, rawat hewanmu setiap hari."
+    ]
+  }
+];
+
+/* =========================================================
+   MAP
+   ========================================================= */
+
+let map = [];
+
+function createMap(){
+
+  map = [];
+
+  for(let y=0;y<MAP_H;y++){
+    map[y]=[];
+
+    for(let x=0;x<MAP_W;x++){
+
+      let tile="grass";
+
+      if(x===0 || y===0 || x===MAP_W-1 || y===MAP_H-1){
+        tile="tree";
+      }
+
+      if(y>=19 && x>=2 && x<=35){
+        tile="water";
+      }
+
+      if(y>=18 && y<=20 && x>=2 && x<=35){
+        tile="water";
+      }
+
+      if(x>=7 && x<=15 && y>=7 && y<=15){
+        tile="soil";
+      }
+
+      if(x>=16 && x<=22 && y>=5 && y<=11){
+        tile="path";
+      }
+
+      if(x>=23 && x<=30 && y>=5 && y<=11){
+        tile="grass";
+      }
+
+      if(x>=23 && x<=29 && y>=12 && y<=18){
+        tile="grass";
+      }
+
+      map[y][x]={
+        type:tile,
+        tilled:false,
+        watered:false,
+        crop:null,
+        cropAge:0
+      };
+    }
+  }
+
+  /* Jalan */
+  for(let x=2;x<36;x++){
+    map[14][x].type="path";
+    map[15][x].type="path";
+  }
+
+  for(let y=3;y<19;y++){
+    map[y][18].type="path";
+    map[y][19].type="path";
+  }
+
+  /* Rumah */
+  for(let y=3;y<=8;y++){
+    for(let x=4;x<=10;x++){
+      map[y][x].type="house";
+    }
+  }
+
+  /* Toko */
+  for(let y=3;y<=7;y++){
+    for(let x=21;x<=25;x++){
+      map[y][x].type="shop";
+    }
+  }
+
+  /* Kandang */
+  for(let y=12;y<=17;y++){
+    for(let x=25;x<=31;x++){
+      map[y][x].type="barn";
+    }
+  }
+
+  /* Area kebun */
+  for(let y=7;y<=15;y++){
+    for(let x=7;x<=15;x++){
+      map[y][x].type="grass";
+    }
+  }
+
+  /* Pagar */
+  for(let x=6;x<=16;x++){
+    map[6][x].type="fence";
+    map[16][x].type="fence";
+  }
+
+  for(let y=6;y<=16;y++){
+    map[y][6].type="fence";
+    map[y][16].type="fence";
+  }
+
+  /* Pintu rumah */
+  map[8][7].type="path";
+  map[8][8].type="path";
+
+  /* Pintu toko */
+  map[8][23].type="path";
+
+  /* Batu dekorasi */
+  map[10][27].type="stone";
+  map[17][33].type="stone";
+  map[12][33].type="stone";
+
+  /* Pohon */
+  const trees=[
+    [3,10],[4,12],[3,16],[5,23],[3,30],
+    [9,33],[11,35],[16,35],[17,4],
+    [10,3],[13,3],[16,3]
+  ];
+
+  trees.forEach(([x,y])=>{
+    if(map[y] && map[y][x]) map[y][x].type="tree";
+  });
+
+  /* Posisi pemain */
+  player.x=9;
+  player.y=13;
+}
+
+createMap();
+
+/* =========================================================
+   CHICKENS
+   ========================================================= */
+
+let chickens = [
+  {
+    name:"Milo",
+    x:27,
+    y:14,
+    color:"#fff4dc",
+    fed:false,
+    happy:70
+  },
+  {
+    name:"Luna",
+    x:29,
+    y:16,
+    color:"#d8c3a0",
+    fed:false,
+    happy:80
+  }
+];
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+const keys={};
+
+window.addEventListener("keydown",(e)=>{
+
+  keys[e.key.toLowerCase()]=true;
+
+  if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)){
+    e.preventDefault();
+  }
+
+  if(!game.running)return;
+
+  if(e.key.toLowerCase()==="e"){
+    interact();
+  }
+
+  if(e.key.toLowerCase()==="i"){
+    toggleInventory();
+  }
+
+  if(e.key==="Escape"){
+    closePanels();
+  }
+
+  const toolKeys={
+    "1":"hoe",
+    "2":"seed",
+    "3":"water",
+    "4":"harvest",
+    "5":"axe",
+    "6":"pickaxe"
+  };
+
+  if(toolKeys[e.key]){
+    selectTool(toolKeys[e.key]);
+  }
+});
+
+window.addEventListener("keyup",(e)=>{
+  keys[e.key.toLowerCase()]=false;
+});
+
+/* Touch D-Pad */
+document.querySelectorAll("#touch button").forEach(btn=>{
+
+  const dir=btn.dataset.dir;
+
+  const down=(e)=>{
+    e.preventDefault();
+    keys[dir]=true;
+  };
+
+  const up=(e)=>{
+    e.preventDefault();
+    keys[dir]=false;
+  };
+
+  btn.addEventListener("pointerdown",down);
+  btn.addEventListener("pointerup",up);
+  btn.addEventListener("pointercancel",up);
+  btn.addEventListener("pointerleave",up);
+});
+
+/* =========================================================
+   MENU
+   ========================================================= */
+
+document.getElementById("newGameBtn").addEventListener("click",()=>{
+  newGame();
+});
+
+document.getElementById("continueBtn").addEventListener("click",()=>{
+  if(loadGame()){
+    startGame();
+    showMessage("Save berhasil dimuat.");
+  }else{
+    showMessageMenu("Belum ada save game.");
+  }
+});
+
+function showMessageMenu(text){
+  const box=document.querySelector(".note");
+  box.textContent=text;
+  setTimeout(()=>{
+    box.innerHTML=
+      "Dunia original ALFA FARM LIFE.<br>"+
+      "Bangun kebun, rawat hewan, kenali warga desa,<br>"+
+      "dan kembangkan kehidupan pertanianmu.";
+  },1800);
+}
+
+/* =========================================================
+   NEW GAME
+   ========================================================= */
+
+function newGame(){
+
+  game.day=1;
+  game.season=0;
+  game.year=1;
+  game.hour=6;
+  game.minute=0;
+  game.money=500;
+  game.energy=100;
+  game.weather="sunny";
+
+  inventory={
+    seedTurnip:10,
+    seedCorn:5,
+    seedPumpkin:2,
+    turnip:0,
+    corn:0,
+    pumpkin:0,
+    egg:0,
+    wood:0,
+    stone:0
+  };
+
+  createMap();
+
+  chickens=[
+    {
+      name:"Milo",
+      x:27,
+      y:14,
+      color:"#fff4dc",
+      fed:false,
+      happy:70
+    },
+    {
+      name:"Luna",
+      x:29,
+      y:16,
+      color:"#d8c3a0",
+      fed:false,
+      happy:80
+    }
+  ];
+
+  saveGame();
+  startGame();
+}
+
+/* =========================================================
+   START
+   ========================================================= */
+
+function startGame(){
+
+  document.getElementById("menu").style.display="none";
+  document.getElementById("game").style.display="block";
+
+  game.running=true;
+  game.lastTime=performance.now();
+
+  updateHUD();
+
+  requestAnimationFrame(loop);
+}
+
+/* =========================================================
+   GAME LOOP
+   ========================================================= */
+
+function loop(now){
+
+  if(!game.running)return;
+
+  const dt=Math.min(.05,(now-game.lastTime)/1000);
+  game.lastTime=now;
+
+  update(dt);
+  draw();
+
+  requestAnimationFrame(loop);
+}
+
+/* =========================================================
+   UPDATE
+   ========================================================= */
+
+function update(dt){
+
+  if(game.dialogOpen || game.inventoryOpen || game.shopOpen){
+    updateHUD();
+    return;
+  }
+
+  movePlayer(dt);
+
+  game.dayTimer+=dt;
+
+  /* waktu game bergerak */
+  if(game.dayTimer>=3.2){
+
+    game.dayTimer=0;
+
+    advanceTime(10);
+
+  }
+
+  updateChickens(dt);
+
+  if(game.messageTimer>0){
+    game.messageTimer-=dt;
+
+    if(game.messageTimer<=0){
+      document.getElementById("message").classList.remove("show");
+    }
+  }
+
+  updateCamera();
+  updateHUD();
+}
+
+/* =========================================================
+   MOVEMENT
+   ========================================================= */
+
+function movePlayer(dt){
+
+  let dx=0;
+  let dy=0;
+
+  if(keys["w"] || keys["arrowup"] || keys["up"])dy-=1;
+  if(keys["s"] || keys["arrowdown"] || keys["down"])dy+=1;
+  if(keys["a"] || keys["arrowleft"] || keys["left"])dx-=1;
+  if(keys["d"] || keys["arrowright"] || keys["right"])dx+=1;
+
+  if(dx===0 && dy===0){
+    player.moving=false;
+    return;
+  }
+
+  player.moving=true;
+
+  const len=Math.hypot(dx,dy)||1;
+  dx/=len;
+  dy/=len;
+
+  const speed=player.speed*dt;
+
+  let nx=player.x+dx*speed;
+  let ny=player.y+dy*speed;
+
+  if(dx>0)player.dir="right";
+  if(dx<0)player.dir="left";
+  if(dy>0)player.dir="down";
+  if(dy<0)player.dir="up";
+
+  if(canWalk(nx,player.y)){
+    player.x=nx;
+  }
+
+  if(canWalk(player.x,ny)){
+    player.y=ny;
+  }
+
+  player.frame+=dt*10;
+
+  if(player.x<1.2)player.x=1.2;
+  if(player.y<1.2)player.y=1.2;
+  if(player.x>MAP_W-2)player.x=MAP_W-2;
+  if(player.y>MAP_H-2)player.y=MAP_H-2;
+}
+
+function canWalk(x,y){
+
+  const tx=Math.floor(x);
+  const ty=Math.floor(y);
+
+  if(!map[ty] || !map[ty][tx])return false;
+
+  const type=map[ty][tx].type;
+
+  return ![
+    "tree",
+    "house",
+    "shop",
+    "barn",
+    "fence",
+    "water",
+    "stone"
+  ].includes(type);
+}
+
+/* =========================================================
+   CAMERA
+   ========================================================= */
+
+function updateCamera(){
+
+  const worldW=MAP_W*TILE;
+  const worldH=MAP_H*TILE;
+
+  const targetX=player.x*TILE-W/2;
+  const targetY=player.y*TILE-H/2;
+
+  game.cameraX+=(targetX-game.cameraX)*.12;
+  game.cameraY+=(targetY-game.cameraY)*.12;
+
+  game.cameraX=Math.max(0,Math.min(worldW-W,game.cameraX));
+  game.cameraY=Math.max(0,Math.min(worldH-H,game.cameraY));
+}
+
+/* =========================================================
+   TIME
+   ========================================================= */
+
+function advanceTime(minutes){
+
+  game.minute+=minutes;
+
+  if(game.minute>=60){
+    game.minute-=60;
+    game.hour++;
+  }
+
+  if(game.hour>=23){
+    game.hour=23;
+    sleep();
+  }
+
+  updateHUD();
+}
+
+function sleep(){
+
+  showMessage("Hari selesai. Raka beristirahat...");
+
+  game.day++;
+
+  if(game.day>28){
+    game.day=1;
+    game.season++;
+
+    if(game.season>=4){
+      game.season=0;
+      game.year++;
+    }
+  }
+
+  game.hour=6;
+  game.minute=0;
+  game.energy=game.maxEnergy;
+
+  game.weather=Math.random()<.25?"rain":"sunny";
+
+  growCrops();
+  resetAnimals();
+
+  saveGame();
+
+  player.x=9;
+  player.y=13;
+}
+
+/* =========================================================
+   CROPS
+   ========================================================= */
+
+function getCurrentFarmTile(){
+
+  const tx=Math.floor(player.x);
+  const ty=Math.floor(player.y);
+
+  if(!map[ty] || !map[ty][tx])return null;
+
+  return {
+    tile:map[ty][tx],
+    x:tx,
+    y:ty
+  };
+}
+
+function useTool(){
+
+  if(game.energy<=0){
+    showMessage("Energi habis. Istirahatlah.");
+    return;
+  }
+
+  const target=getTargetTile();
+
+  if(!target)return;
+
+  const tile=target.tile;
+
+  if(game.selectedTool==="hoe"){
+
+    if(tile.type==="grass" && !tile.crop){
+
+      tile.tilled=true;
+      game.energy-=5;
+
+      showMessage("Tanah berhasil dicangkul.");
+
+    }else{
+      showMessage("Tidak bisa mencangkul di sini.");
+    }
+  }
+
+  else if(game.selectedTool==="seed"){
+
+    if(!tile.tilled){
+      showMessage("Cangkul tanah terlebih dahulu.");
+      return;
+    }
+
+    if(tile.crop){
+      showMessage("Tanah ini sudah ditanami.");
+      return;
+    }
+
+    let seed="seedTurnip";
+    let crop="turnip";
+
+    if(inventory.seedCorn>0){
+      seed="seedCorn";
+      crop="corn";
+    }
+
+    if(inventory.seedPumpkin>0 && game.season===2){
+      seed="seedPumpkin";
+      crop="pumpkin";
+    }
+
+    if(inventory[seed]<=0){
+      showMessage("Bibit habis.");
+      return;
+    }
+
+    inventory[seed]--;
+
+    tile.crop=crop;
+    tile.cropAge=0;
+    tile.watered=false;
+
+    game.energy-=3;
+
+    showMessage("Bibit "+crops[crop].name+" ditanam.");
+
+  }
+
+  else if(game.selectedTool==="water"){
+
+    if(tile.crop){
+
+      if(tile.watered){
+        showMessage("Tanaman ini sudah disiram hari ini.");
+      }else{
+
+        tile.watered=true;
+        game.energy-=2;
+
+        showMessage("Tanaman disiram. 💧");
+      }
+
+    }else{
+      showMessage("Tidak ada tanaman di sini.");
+    }
+
+  }
+
+  else if(game.selectedTool==="harvest"){
+
+    if(tile.crop){
+
+      const crop=tile.crop;
+
+      if(tile.cropAge>=crops[crop].days){
+
+        inventory[crop]++;
+        tile.crop=null;
+        tile.cropAge=0;
+        tile.watered=false;
+        tile.tilled=true;
+
+        game.energy-=2;
+
+        showMessage("Panen berhasil: "+crops[crop].name+"!");
+
+      }else{
+
+        const left=crops[crop].days-tile.cropAge;
+
+        showMessage("Belum siap panen. Sisa "+left+" hari.");
+
+      }
+
+    }else{
+      showMessage("Tidak ada tanaman untuk dipanen.");
+    }
+
+  }
+
+  else if(game.selectedTool==="axe"){
+
+    if(tile.type==="tree"){
+
+      tile.type="grass";
+      inventory.wood+=3;
+      game.energy-=8;
+
+      showMessage("Kayu diperoleh +3.");
+
+    }else{
+      showMessage("Kapak tidak digunakan di sini.");
+    }
+
+  }
+
+  else if(game.selectedTool==="pickaxe"){
+
+    if(tile.type==="stone"){
+
+      tile.type="grass";
+      inventory.stone+=2;
+      game.energy-=7;
+
+      showMessage("Batu diperoleh +2.");
+
+    }else{
+      showMessage("Tidak ada batu di sini.");
+    }
+  }
+
+  updateHUD();
+}
+
+/* =========================================================
+   TARGET TILE
+   ========================================================= */
+
+function getTargetTile(){
+
+  let tx=Math.floor(player.x);
+  let ty=Math.floor(player.y);
+
+  if(player.dir==="up")ty--;
+  if(player.dir==="down")ty++;
+  if(player.dir==="left")tx--;
+  if(player.dir==="right")tx++;
+
+  if(!map[ty] || !map[ty][tx])return null;
+
+  return {
+    x:tx,
+    y:ty,
+    tile:map[ty][tx]
+  };
+}
+
+function growCrops(){
+
+  for(let y=0;y<MAP_H;y++){
+
+    for(let x=0;x<MAP_W;x++){
+
+      const tile=map[y][x];
+
+      if(tile.crop){
+
+        if(tile.watered){
+
+          tile.cropAge++;
+
+        }
+
+        tile.watered=false;
+      }
+    }
+  }
+}
+
+/* =========================================================
+   ANIMALS
+   ========================================================= */
+
+function updateChickens(dt){
+
+  chickens.forEach(chicken=>{
+
+    if(Math.random()<dt*.35){
+
+      const dirs=[
+        [1,0],
+        [-1,0],
+        [0,1],
+        [0,-1]
+      ];
+
+      const d=dirs[Math.floor(Math.random()*dirs.length)];
+
+      const nx=chicken.x+d[0]*.3;
+      const ny=chicken.y+d[1]*.3;
+
+      if(canWalk(nx,ny)){
+        chicken.x=nx;
+        chicken.y=ny;
+      }
+    }
+
+  });
+}
+
+function resetAnimals(){
+
+  chickens.forEach(chicken=>{
+
+    chicken.fed=false;
+
+    if(Math.random()<.65){
+
+      inventory.egg++;
+
+      showMessage(chicken.name+" menghasilkan telur! 🥚");
+
+    }
+
+  });
+}
+
+/* =========================================================
+   INTERACTION
+   ========================================================= */
+
+function interact(){
+
+  if(game.inventoryOpen || game.shopOpen)return;
+
+  const nearbyNPC=findNearbyNPC();
+
+  if(nearbyNPC){
+
+    openDialog(
+      nearbyNPC.name,
+      nearbyNPC.dialogues[Math.floor(Math.random()*nearbyNPC.dialogues.length)],
+      nearbyNPC
+    );
+
+    return;
+  }
+
+  const chicken=findNearbyChicken();
+
+  if(chicken){
+
+    chicken.fed=true;
+    chicken.happy=Math.min(100,chicken.happy+5);
+
+    showMessage(chicken.name+" senang dielus. 🐔");
+
+    return;
+  }
+
+  const tx=Math.floor(player.x);
+  const ty=Math.floor(player.y);
+
+  if(map[ty] && map[ty][tx]){
+
+    const tile=map[ty][tx];
+
+    if(tile.type==="shop"){
+
+      openShop();
+      return;
+
+    }
+
+    if(tile.type==="house"){
+
+      sleep();
+      return;
+
+    }
+
+    if(tile.type==="barn"){
+
+      showMessage("Kandang ayam. Rawat ayam setiap hari.");
+
+      return;
+
+    }
+  }
+
+  useTool();
+}
+
+function findNearbyNPC(){
+
+  let nearest=null;
+  let distance=1.4;
+
+  npcs.forEach(npc=>{
+
+    const d=Math.hypot(
+      npc.x-player.x,
+      npc.y-player.y
+    );
+
+    if(d<distance){
+
+      nearest=npc;
+      distance=d;
+
+    }
+  });
+
+  return nearest;
+}
+
+function findNearbyChicken(){
+
+  let nearest=null;
+  let distance=1.3;
+
+  chickens.forEach(chicken=>{
+
+    const d=Math.hypot(
+      chicken.x-player.x,
+      chicken.y-player.y
+    );
+
+    if(d<distance){
+
+      nearest=chicken;
+      distance=d;
+
+    }
+  });
+
+  return nearest;
+}
+
+/* =========================================================
+   DIALOG
+   ========================================================= */
+
+function openDialog(name,line,npc){
+
+  game.dialogOpen=true;
+
+  document.getElementById("dialog").style.display="block";
+  document.getElementById("dialogName").textContent=name;
+  document.getElementById("dialogLine").textContent=line;
+
+  drawPortrait(
+    document.getElementById("dialogPortrait"),
+    npc
+  );
+}
+
+function closeDialog(){
+
+  game.dialogOpen=false;
+  document.getElementById("dialog").style.display="none";
+
+}
+
+document.getElementById("dialogClose").addEventListener("click",closeDialog);
+
+/* =========================================================
+   PORTRAIT
+   ========================================================= */
+
+function drawPortrait(element,npc){
+
+  element.innerHTML="";
+
+  const c=document.createElement("canvas");
+  c.width=90;
+  c.height=90;
+
+  const p=c.getContext("2d");
+
+  p.fillStyle="#b5d98c";
+  p.fillRect(0,0,90,90);
+
+  /* body */
+  p.fillStyle=npc.shirt;
+  p.beginPath();
+  p.roundRect(23,55,44,38,12);
+  p.fill();
+
+  /* neck */
+  p.fillStyle=npc.skin;
+  p.fillRect(39,47,12,14);
+
+  /* head */
+  p.fillStyle=npc.skin;
+  p.beginPath();
+  p.arc(45,38,24,0,Math.PI*2);
+  p.fill();
+
+  /* hair */
+  p.fillStyle=npc.hair;
+  p.beginPath();
+  p.arc(45,30,25,Math.PI,Math.PI*2);
+  p.fill();
+
+  p.fillRect(20,29,9,13);
+
+  /* eyes */
+  p.fillStyle="#201810";
+  p.fillRect(34,38,5,6);
+  p.fillRect(51,38,5,6);
+
+  /* mouth */
+  p.strokeStyle="#733d35";
+  p.lineWidth=2;
+  p.beginPath();
+  p.arc(45,45,6,0,Math.PI);
+  p.stroke();
+
+  element.appendChild(c);
+}
+
+/* =========================================================
+   SHOP
+   ========================================================= */
+
+function openShop(){
+
+  game.shopOpen=true;
+  document.getElementById("shop").style.display="block";
+
+  renderShop();
+}
+
+function renderShop(){
+
+  const rows=document.getElementById("shopRows");
+
+  rows.innerHTML="";
+
+  const products=[
+    {
+      id:"seedTurnip",
+      name:"Bibit Lobak",
+      icon:"🥕",
+      price:15
+    },
+    {
+      id:"seedCorn",
+      name:"Bibit Jagung",
+      icon:"🌽",
+      price:25
+    },
+    {
+      id:"seedPumpkin",
+      name:"Bibit Labu",
+      icon:"🎃",
+      price:45
+    }
+  ];
+
+  products.forEach(product=>{
+
+    const row=document.createElement("div");
+    row.className="shopRow";
+
+    row.innerHTML=`
+      <div class="shopInfo">
+        <div class="shopEmoji">${product.icon}</div>
+        <div>
+          <b>${product.name}</b><br>
+          <small>💰 ${product.price}</small>
+        </div>
+      </div>
+      <button class="shopBuy">BELI</button>
+    `;
+
+    row.querySelector("button").addEventListener("click",()=>{
+
+      if(game.money<product.price){
+
+        showMessage("Uang tidak cukup.");
+
+        return;
+      }
+
+      game.money-=product.price;
+      inventory[product.id]++;
+
+      showMessage(product.name+" dibeli.");
+
+      renderShop();
+      updateHUD();
+
+    });
+
+    rows.appendChild(row);
+
+  });
+
+}
+
+document.getElementById("closeShop").addEventListener("click",()=>{
+
+  game.shopOpen=false;
+  document.getElementById("shop").style.display="none";
+
+});
+
+/* =========================================================
+   SELL CROPS
+   ========================================================= */
+
+function sellAll(){
+
+  let earned=0;
+
+  Object.keys(crops).forEach(id=>{
+
+    const qty=inventory[id];
+
+    if(qty>0){
+
+      earned+=qty*crops[id].price;
+      inventory[id]=0;
+
+    }
+
+  });
+
+  if(inventory.egg>0){
+
+    earned+=inventory.egg*35;
+    inventory.egg=0;
+
+  }
+
+  if(earned>0){
+
+    game.money+=earned;
+    showMessage("Hasil panen terjual: +💰 "+earned);
+
+  }else{
+
+    showMessage("Belum ada hasil untuk dijual.");
+
+  }
+
+  updateHUD();
+}
+
+/* =========================================================
+   INVENTORY
+   ========================================================= */
+
+function toggleInventory(){
+
+  if(game.shopOpen || game.dialogOpen)return;
+
+  game.inventoryOpen=!game.inventoryOpen;
+
+  document.getElementById("inventory").style.display=
+    game.inventoryOpen?"block":"none";
+
+  if(game.inventoryOpen){
+    renderInventory();
+  }
+}
+
+function renderInventory(){
+
+  const grid=document.getElementById("invGrid");
+
+  grid.innerHTML="";
+
+  Object.keys(inventory).forEach(id=>{
+
+    const item=items[id];
+
+    if(!item)return;
+
+    const box=document.createElement("div");
+    box.className="item";
+
+    box.innerHTML=`
+      <div class="itemIcon">${item.icon}</div>
+      <div class="itemName">${item.name}</div>
+      <div class="itemQty">x${inventory[id]}</div>
+    `;
+
+    grid.appendChild(box);
+
+  });
+
+  const sell=document.createElement("button");
+
+  sell.className="closePanel";
+  sell.textContent="💰 JUAL SEMUA HASIL PANEN";
+
+  sell.addEventListener("click",sellAll);
+
+  grid.appendChild(sell);
+
+}
+
+document.getElementById("closeInventory").addEventListener("click",()=>{
+
+  game.inventoryOpen=false;
+  document.getElementById("inventory").style.display="none";
+
+});
+
+/* =========================================================
+   TOOL SELECT
+   ========================================================= */
+
+function selectTool(tool){
+
+  game.selectedTool=tool;
+
+  document.querySelectorAll(".tool").forEach(btn=>{
+    btn.classList.toggle(
+      "active",
+      btn.dataset.tool===tool
+    );
+  });
+}
+
+document.querySelectorAll(".tool").forEach(btn=>{
+
+  btn.addEventListener("click",()=>{
+
+    selectTool(btn.dataset.tool);
+
+  });
+
+});
+
+document.getElementById("actionBtn").addEventListener("click",()=>{
+
+  if(game.dialogOpen){
+    closeDialog();
+    return;
+  }
+
+  if(game.inventoryOpen){
+    toggleInventory();
+    return;
+  }
+
+  if(game.shopOpen){
+    return;
+  }
+
+  interact();
+
+});
+
+/* =========================================================
+   CLOSE PANELS
+   ========================================================= */
+
+function closePanels(){
+
+  if(game.dialogOpen){
+    closeDialog();
+    return;
+  }
+
+  if(game.inventoryOpen){
+
+    game.inventoryOpen=false;
+    document.getElementById("inventory").style.display="none";
+
+    return;
+  }
+
+  if(game.shopOpen){
+
+    game.shopOpen=false;
+    document.getElementById("shop").style.display="none";
+
+  }
+}
+
+/* =========================================================
+   HUD
+   ========================================================= */
+
+function updateHUD(){
+
+  document.getElementById("dayText").textContent=
+    "Hari "+game.day+" • Tahun "+game.year;
+
+  document.getElementById("seasonText").textContent=
+    seasons[game.season];
+
+  const hh=String(game.hour).padStart(2,"0");
+  const mm=String(game.minute).padStart(2,"0");
+
+  document.getElementById("timeText").textContent=
+    hh+":"+mm;
+
+  document.getElementById("moneyText").textContent=
+    game.money;
+
+  document.getElementById("energyText").textContent=
+    Math.max(0,Math.floor(game.energy));
+
+  document.getElementById("energyFill").style.width=
+    Math.max(0,Math.min(100,game.energy))+"%";
+}
+
+function showMessage(text){
+
+  const box=document.getElementById("message");
+
+  box.textContent=text;
+  box.classList.add("show");
+
+  game.messageTimer=2.5;
+}
+
+/* =========================================================
+   DRAW
+   ========================================================= */
+
+function draw(){
+
+  ctx.clearRect(0,0,W,H);
+
+  ctx.save();
+
+  ctx.translate(
+    -game.cameraX,
+    -game.cameraY
+  );
+
+  drawWorld();
+
+  drawCrops();
+  drawChickens();
+  drawNPCs();
+  drawPlayer();
+
+  ctx.restore();
+
+  drawWeather();
+
+}
+
+/* =========================================================
+   WORLD
+   ========================================================= */
+
+function drawWorld(){
+
+  const startX=Math.max(0,Math.floor(game.cameraX/TILE)-1);
+  const startY=Math.max(0,Math.floor(game.cameraY/TILE)-1);
+
+  const endX=Math.min(
+    MAP_W,
+    Math.ceil((game.cameraX+W)/TILE)+1
+  );
+
+  const endY=Math.min(
+    MAP_H,
+    Math.ceil((game.cameraY+H)/TILE)+1
+  );
+
+  for(let y=startY;y<endY;y++){
+
+    for(let x=startX;x<endX;x++){
+
+      drawTile(
+        map[y][x],
+        x*TILE,
+        y*TILE
+      );
+
+    }
+  }
+}
+
+function drawTile(tile,x,y){
+
+  const t=tile.type;
+
+  if(t==="grass"){
+
+    ctx.fillStyle="#72a85a";
+    ctx.fillRect(x,y,TILE,TILE);
+
+    ctx.strokeStyle="rgba(30,70,30,.12)";
+    ctx.strokeRect(x,y,TILE,TILE);
+
+    /* rumput */
+    ctx.strokeStyle="rgba(30,90,35,.35)";
+    ctx.lineWidth=1;
+
+    for(let i=0;i<4;i++){
+
+      const gx=x+8+i*10;
+      const gy=y+34-(i%2)*5;
+
+      ctx.beginPath();
+      ctx.moveTo(gx,gy+5);
+      ctx.lineTo(gx+2,gy);
+      ctx.stroke();
+
+    }
+
+  }
+
+  else if(t==="path"){
+
+    ctx.fillStyle="#c6a36d";
+    ctx.fillRect(x,y,TILE,TILE);
+
+    ctx.fillStyle="rgba(120,85,45,.16)";
+
+    for(let i=0;i<4;i++){
+
+      ctx.beginPath();
+      ctx.arc(
+        x+10+(i*13)%40,
+        y+10+(i*17)%35,
+        2,
+        0,
+        Math.PI*2
+      );
+      ctx.fill();
+
+    }
+
+  }
+
+  else if(t==="water"){
+
+    ctx.fillStyle="#4d9dcc";
+    ctx.fillRect(x,y,TILE,TILE);
+
+    ctx.strokeStyle="rgba(220,250,255,.45)";
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+    ctx.moveTo(x+5,y+20);
+    ctx.quadraticCurveTo(
+      x+20,y+14,
+      x+38,y+20
+    );
+    ctx.stroke();
+
+  }
+
+  else if(t==="soil"){
+
+    ctx.fillStyle="#72a85a";
+    ctx.fillRect(x,y,TILE,TILE);
+
+  }
+
+  else if(t==="fence"){
+
+    ctx.fillStyle="#74a75c";
+    ctx.fillRect(x,y,TILE,TILE);
+
+    ctx.fillStyle="#d8b274";
+    ctx.fillRect(x+5,y+18,TILE-10,7);
+    ctx.fillRect(x+18,y+5,7,TILE-10);
+
+  }
+
+  else if(t==="house"){
+
+    drawHouse(x,y);
+
+  }
+
+  else if(t==="shop"){
+
+    drawShop(x,y);
+
+  }
+
+  else if(t==="barn"){
+
+    drawBarn(x,y);
+
+  }
+
+  else if(t==="tree"){
+
+    drawGrassBase(x,y);
+
+    drawTree(x,y);
+
+  }
+
+  else if(t==="stone"){
+
+    drawGrassBase(x,y);
+
+    ctx.fillStyle="#777d79";
+    ctx.beginPath();
+    ctx.moveTo(x+10,y+38);
+    ctx.lineTo(x+16,y+16);
+    ctx.lineTo(x+34,y+11);
+    ctx.lineTo(x+42,y+31);
+    ctx.lineTo(x+32,y+40);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle="#aeb5ad";
+    ctx.beginPath();
+    ctx.moveTo(x+16,y+20);
+    ctx.lineTo(x+32,y+15);
+    ctx.lineTo(x+26,y+25);
+    ctx.closePath();
+    ctx.fill();
+
+  }
+
+}
+
+function drawGrassBase(x,y){
+
+  ctx.fillStyle="#72a85a";
+  ctx.fillRect(x,y,TILE,TILE);
+}
+
+/* =========================================================
+   HOUSE
+   ========================================================= */
+
+function drawHouse(x,y){
+
+  ctx.fillStyle="#d4b17a";
+  ctx.fillRect(x,y,TILE,TILE);
+
+  ctx.fillStyle="#9c4c3f";
+
+  ctx.beginPath();
+  ctx.moveTo(x-5,y+20);
+  ctx.lineTo(x+24,y-7);
+  ctx.lineTo(x+53,y+20);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle="#f5d6a1";
+  ctx.fillRect(x+14,y+25,20,23);
+
+  ctx.fillStyle="#59402c";
+  ctx.fillRect(x+17,y+31,14,17);
+
+}
+
+/* =========================================================
+   SHOP
+   ========================================================= */
+
+function drawShop(x,y){
+
+  ctx.fillStyle="#d7c18e";
+  ctx.fillRect(x,y,TILE,TILE);
+
+  ctx.fillStyle="#4c7d49";
+  ctx.fillRect(x,y+4,TILE,13);
+
+  ctx.fillStyle="#f1e0ad";
+  ctx.fillRect(x+9,y+22,30,22);
+
+  ctx.fillStyle="#33271c";
+  ctx.fillRect(x+17,y+29,14,15);
+
+}
+
+/* =========================================================
+   BARN
+   ========================================================= */
+
+function drawBarn(x,y){
+
+  ctx.fillStyle="#b86c45";
+  ctx.fillRect(x,y,TILE,TILE);
+
+  ctx.fillStyle="#713d2e";
+
+  ctx.beginPath();
+  ctx.moveTo(x-4,y+19);
+  ctx.lineTo(x+24,y-8);
+  ctx.lineTo(x+52,y+19);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle="#f3d49b";
+  ctx.fillRect(x+10,y+27,29,21);
+
+  ctx.fillStyle="#774a32";
+  ctx.fillRect(x+22,y+27,7,21);
+
+}
+
+/* =========================================================
+   TREE
+   ========================================================= */
+
+function drawTree(x,y){
+
+  /* shadow */
+  ctx.fillStyle="rgba(20,50,20,.25)";
+  ctx.beginPath();
+  ctx.ellipse(
+    x+24,
+    y+43,
+    19,
+    7,
+    0,
+    0,
+    Math.PI*2
+  );
+  ctx.fill();
+
+  /* trunk */
+  ctx.fillStyle="#704b2e";
+  ctx.fillRect(x+19,y+27,11,21);
+
+  /* leaves */
+  ctx.fillStyle="#2f6937";
+
+  ctx.beginPath();
+  ctx.arc(x+24,y+20,19,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle="#4e8c48";
+
+  ctx.beginPath();
+  ctx.arc(x+14,y+19,11,0,Math.PI*2);
+  ctx.arc(x+34,y+16,12,0,Math.PI*2);
+  ctx.arc(x+25,y+8,12,0,Math.PI*2);
+  ctx.fill();
+
+}
+
+/* =========================================================
+   CROPS
+   ========================================================= */
+
+function drawCrops(){
+
+  for(let y=0;y<MAP_H;y++){
+
+    for(let x=0;x<MAP_W;x++){
+
+      const tile=map[y][x];
+
+      if(!tile.crop)continue;
+
+      const px=x*TILE;
+      const py=y*TILE;
+
+      if(tile.tilled){
+
+        ctx.fillStyle="#805a39";
+        ctx.fillRect(px+4,py+5,TILE-8,TILE-10);
+
+        ctx.strokeStyle="rgba(50,30,15,.4)";
+
+        for(let i=0;i<3;i++){
+
+          ctx.beginPath();
+          ctx.moveTo(px+8,py+14+i*9);
+          ctx.lineTo(px+40,py+14+i*9);
+          ctx.stroke();
+
+        }
+      }
+
+      const crop=crops[tile.crop];
+
+      const ratio=Math.min(
+        1,
+        tile.cropAge/crop.days
+      );
+
+      if(ratio<.35){
+
+        ctx.fillStyle="#4d913f";
+
+        ctx.beginPath();
+        ctx.ellipse(
+          px+20,
+          py+29,
+          6,
+          11,
+          -.4,
+          0,
+          Math.PI*2
+        );
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.ellipse(
+          px+30,
+          py+29,
+          6,
+          11,
+          .4,
+          0,
+          Math.PI*2
+        );
+        ctx.fill();
+
+      }else{
+
+        ctx.font=(ratio>=1?30:25)+"px Arial";
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillText(
+          crop.icon,
+          px+24,
+          py+27
+        );
+      }
+
+      if(tile.watered){
+
+        ctx.fillStyle="#8ed2f2";
+        ctx.beginPath();
+        ctx.arc(px+39,py+9,3,0,Math.PI*2);
+        ctx.fill();
+
+      }
+
+    }
+  }
+}
+
+/* =========================================================
+   CHARACTER DRAWING
+   ========================================================= */
+
+function drawCharacter(x,y,character,scale=1,frame=0){
+
+  const px=x*TILE;
+  const py=y*TILE;
+
+  ctx.save();
+
+  ctx.translate(px,py);
+
+  const bob=
+    character.moving
+    ? Math.sin(frame)*2
+    : 0;
+
+  ctx.translate(0,bob);
+
+  /* shadow */
+  ctx.fillStyle="rgba(20,20,20,.25)";
+  ctx.beginPath();
+  ctx.ellipse(
+    24,
+    44,
+    14,
+    5,
+    0,
+    0,
+    Math.PI*2
+  );
+  ctx.fill();
+
+  /* legs */
+  ctx.fillStyle=character.pants;
+
+  ctx.fillRect(15,35,7,12);
+  ctx.fillRect(26,35,7,12);
+
+  /* shoes */
+  ctx.fillStyle="#29251f";
+  ctx.fillRect(13,44,10,5);
+  ctx.fillRect(25,44,10,5);
+
+  /* body */
+  ctx.fillStyle=character.shirt;
+
+  ctx.beginPath();
+  ctx.roundRect(
+    10,
+    20,
+    28,
+    20,
+    8
+  );
+  ctx.fill();
+
+  /* arms */
+  ctx.fillStyle=character.skin;
+
+  ctx.beginPath();
+  ctx.arc(10,28,5,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(38,28,5,0,Math.PI*2);
+  ctx.fill();
+
+  /* neck */
+  ctx.fillRect(19,16,10,8);
+
+  /* head */
+  ctx.beginPath();
+  ctx.arc(24,12,15,0,Math.PI*2);
+  ctx.fill();
+
+  /* hair */
+  ctx.fillStyle=character.hair;
+
+  ctx.beginPath();
+  ctx.arc(
+    24,
+    8,
+    15,
+    Math.PI,
+    Math.PI*2
+  );
+  ctx.fill();
+
+  /* side hair */
+  ctx.fillRect(9,7,5,13);
+  ctx.fillRect(34,7,5,13);
+
+  /* eyes */
+  ctx.fillStyle="#211a14";
+
+  ctx.fillRect(18,11,3,4);
+  ctx.fillRect(27,11,3,4);
+
+  /* nose */
+  ctx.fillStyle="#bd805c";
+  ctx.fillRect(23,15,3,2);
+
+  /* mouth */
+  ctx.strokeStyle="#703c36";
+  ctx.lineWidth=1.5;
+
+  ctx.beginPath();
+  ctx.arc(
+    24,
+    17,
+    4,
+    0,
+    Math.PI
+  );
+
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+/* =========================================================
+   NPC DRAW
+   ========================================================= */
+
+function drawNPCs(){
+
+  npcs.forEach(npc=>{
+
+    drawCharacter(
+      npc.x,
+      npc.y,
+      {
+        hair:npc.hair,
+        shirt:npc.shirt,
+        pants:npc.pants,
+        skin:npc.skin,
+        moving:false
+      },
+      1,
+      0
+    );
+
+    /* nama */
+    ctx.save();
+
+    ctx.font="bold 11px Arial";
+    ctx.textAlign="center";
+    ctx.textBaseline="bottom";
+
+    const nameX=npc.x*TILE+24;
+    const nameY=npc.y*TILE-5;
+
+    const width=ctx.measureText(npc.name).width+12;
+
+    ctx.fillStyle="rgba(10,20,12,.78)";
+    ctx.roundRect(
+      nameX-width/2,
+      nameY-15,
+      width,
+      17,
+      7
+    );
+    ctx.fill();
+
+    ctx.fillStyle="#fff";
+    ctx.fillText(
+      npc.name,
+      nameX,
+      nameY-2
+    );
+
+    ctx.restore();
+
+  });
+}
+
+/* =========================================================
+   PLAYER DRAW
+   ========================================================= */
+
+function drawPlayer(){
+
+  drawCharacter(
+    player.x,
+    player.y,
+    {
+      hair:"#251913",
+      shirt:"#3f7e55",
+      pants:"#39475d",
+      skin:"#d99b6c",
+      moving:player.moving
+    },
+    1,
+    player.frame
+  );
+
+  /* Topi petani */
+  const px=player.x*TILE;
+  const py=player.y*TILE;
+
+  ctx.save();
+
+  ctx.fillStyle="#e6b94e";
+  ctx.beginPath();
+  ctx.ellipse(
+    px+24,
+    py-2,
+    18,
+    5,
+    0,
+    0,
+    Math.PI*2
+  );
+  ctx.fill();
+
+  ctx.fillStyle="#f2c75d";
+  ctx.beginPath();
+  ctx.arc(
+    px+24,
+    py-6,
+    11,
+    Math.PI,
+    Math.PI*2
+  );
+  ctx.fill();
+
+  ctx.restore();
+
+}
+
+/* =========================================================
+   CHICKEN DRAW
+   ========================================================= */
+
+function drawChickens(){
+
+  chickens.forEach(chicken=>{
+
+    const px=chicken.x*TILE;
+    const py=chicken.y*TILE;
+
+    ctx.save();
+
+    /* shadow */
+    ctx.fillStyle="rgba(0,0,0,.2)";
+    ctx.beginPath();
+    ctx.ellipse(
+      px+24,
+      py+40,
+      14,
+      5,
+      0,
+      0,
+      Math.PI*2
+    );
+    ctx.fill();
+
+    /* body */
+    ctx.fillStyle=chicken.color;
+
+    ctx.beginPath();
+    ctx.ellipse(
+      px+24,
+      py+29,
+      15,
+      11,
+      0,
+      0,
+      Math.PI*2
+    );
+    ctx.fill();
+
+    /* wing */
+    ctx.fillStyle="#d2c4a9";
+
+    ctx.beginPath();
+    ctx.ellipse(
+      px+29,
+      py+30,
+      8,
+      6,
+      -.2,
+      0,
+      Math.PI*2
+    );
+    ctx.fill();
+
+    /* head */
+    ctx.fillStyle=chicken.color;
+
+    ctx.beginPath();
+    ctx.arc(
+      px+14,
+      py+19,
+      9,
+      0,
+      Math.PI*2
+    );
+    ctx.fill();
+
+    /* eye */
+    ctx.fillStyle="#211";
+    ctx.fillRect(px+11,py+17,3,3);
+
+    /* beak */
+    ctx.fillStyle="#e4a534";
+
+    ctx.beginPath();
+    ctx.moveTo(px+5,py+20);
+    ctx.lineTo(px-1,py+23);
+    ctx.lineTo(px+6,py+25);
+    ctx.closePath();
+    ctx.fill();
+
+    /* comb */
+    ctx.fillStyle="#d8504e";
+
+    ctx.beginPath();
+    ctx.arc(px+11,py+9,3,0,Math.PI*2);
+    ctx.arc(px+16,py+9,3,0,Math.PI*2);
+    ctx.fill();
+
+    /* legs */
+    ctx.strokeStyle="#d99432";
+    ctx.lineWidth=2;
+
+    ctx.beginPath();
+    ctx.moveTo(px+20,py+38);
+    ctx.lineTo(px+20,py+44);
+    ctx.moveTo(px+28,py+38);
+    ctx.lineTo(px+28,py+44);
+    ctx.stroke();
+
+    ctx.restore();
+
+  });
+}
+
+/* =========================================================
+   WEATHER
+   ========================================================= */
+
+function drawWeather(){
+
+  if(game.weather==="rain"){
+
+    ctx.save();
+
+    ctx.strokeStyle="rgba(160,210,255,.42)";
+    ctx.lineWidth=1;
+
+    for(let i=0;i<130;i++){
+
+      const x=(i*97+performance.now()*.12)%W;
+      const y=(i*53+performance.now()*.35)%H;
+
+      ctx.beginPath();
+      ctx.moveTo(x,y);
+      ctx.lineTo(x-5,y+13);
+      ctx.stroke();
+
+    }
+
+    ctx.restore();
+
+  }
+
+  /* malam */
+
+  const night=
+    game.hour>=19 || game.hour<6;
+
+  if(night){
+
+    ctx.fillStyle="rgba(10,18,45,.43)";
+    ctx.fillRect(0,0,W,H);
+
+    /* moon */
+    ctx.fillStyle="rgba(255,245,190,.85)";
+    ctx.beginPath();
+    ctx.arc(
+      W-80,
+      90,
+      25,
+      0,
+      Math.PI*2
+    );
+    ctx.fill();
+
+  }
+
+}
+
+/* =========================================================
+   SAVE / LOAD
+   ========================================================= */
+
+function saveGame(){
+
+  const data={
+    game:{
+      day:game.day,
+      season:game.season,
+      year:game.year,
+      hour:game.hour,
+      minute:game.minute,
+      weather:game.weather,
+      money:game.money,
+      energy:game.energy
+    },
+    player:{
+      x:player.x,
+      y:player.y
+    },
+    inventory,
+    map,
+    chickens
+  };
+
+  try{
+
+    localStorage.setItem(
+      "ALFA_FARM_LIFE_SAVE_V1",
+      JSON.stringify(data)
+    );
+
+  }catch(error){
+
+    console.error(
+      "Save error:",
+      error
+    );
+
+  }
+}
+
+function loadGame(){
+
+  try{
+
+    const raw=localStorage.getItem(
+      "ALFA_FARM_LIFE_SAVE_V1"
+    );
+
+    if(!raw)return false;
+
+    const data=JSON.parse(raw);
+
+    if(data.game){
+
+      Object.assign(
+        game,
+        data.game
+      );
+
+      game.running=false;
+      game.dialogOpen=false;
+      game.inventoryOpen=false;
+      game.shopOpen=false;
+      game.dayTimer=0;
+
+    }
+
+    if(data.player){
+      player.x=data.player.x;
+      player.y=data.player.y;
+    }
+
+    if(data.inventory){
+      inventory=data.inventory;
+    }
+
+    if(data.map){
+      map=data.map;
+    }
+
+    if(data.chickens){
+      chickens=data.chickens;
+    }
+
+    return true;
+
+  }catch(error){
+
+    console.error(
+      "Load error:",
+      error
+    );
+
+    return false;
+
+  }
+}
+
+/* =========================================================
+   AUTO SAVE
+   ========================================================= */
+
+setInterval(()=>{
+
+  if(game.running){
+    saveGame();
+  }
+
+},15000);
+
+/* =========================================================
+   INITIAL HUD
+   ========================================================= */
+
+updateHUD();
+
+</script>
+
+</body>
+</html>
