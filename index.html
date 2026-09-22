@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#17251a">
-<title>ALFA FARM LIFE V2.0</title>
+<title>ALFA FARM LIFE V3.0 - REAL FARMING</title>
 
 <style>
 *{
@@ -12,15 +12,15 @@
   margin:0;
   padding:0;
   -webkit-tap-highlight-color:transparent;
+  user-select:none;
 }
 
 html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#101810;
-  font-family:Arial,Helvetica,sans-serif;
-  user-select:none;
+  background:#101710;
+  font-family:Arial,sans-serif;
 }
 
 #game{
@@ -29,7 +29,6 @@ html,body{
   width:100%;
   height:100%;
   display:block;
-  background:#8bcf70;
 }
 
 #hud{
@@ -39,32 +38,21 @@ html,body{
   right:10px;
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
-  gap:8px;
   pointer-events:none;
   z-index:5;
 }
 
 .panel{
-  background:rgba(18,28,20,.88);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.16);
+  background:rgba(18,27,19,.9);
+  color:white;
+  border:1px solid rgba(255,255,255,.18);
   border-radius:14px;
   padding:9px 12px;
-  box-shadow:0 8px 25px rgba(0,0,0,.25);
-  backdrop-filter:blur(8px);
-}
-
-#status{
-  min-width:210px;
-}
-
-#status b{
-  color:#ffe58a;
+  box-shadow:0 7px 25px rgba(0,0,0,.28);
 }
 
 .bar{
-  width:145px;
+  width:150px;
   height:8px;
   background:#263326;
   border-radius:10px;
@@ -75,13 +63,7 @@ html,body{
 #energyBar{
   width:100%;
   height:100%;
-  background:#e9c85b;
-  transition:.2s;
-}
-
-#info{
-  text-align:right;
-  min-width:190px;
+  background:#e7c958;
 }
 
 #message{
@@ -89,17 +71,17 @@ html,body{
   left:50%;
   bottom:125px;
   transform:translateX(-50%);
-  background:rgba(22,28,22,.93);
-  color:#fff;
+  background:rgba(20,27,20,.95);
+  color:white;
   border:1px solid rgba(255,255,255,.2);
   padding:11px 18px;
   border-radius:14px;
+  z-index:20;
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
   max-width:90%;
   text-align:center;
-  opacity:0;
-  transition:.2s;
-  z-index:10;
-  pointer-events:none;
 }
 
 #message.show{
@@ -108,271 +90,211 @@ html,body{
 
 #toolbar{
   position:fixed;
+  bottom:13px;
   left:50%;
-  bottom:15px;
   transform:translateX(-50%);
   display:flex;
   gap:7px;
   padding:8px;
-  background:rgba(16,24,16,.9);
-  border:1px solid rgba(255,255,255,.14);
+  background:rgba(15,22,16,.93);
+  border:1px solid rgba(255,255,255,.15);
   border-radius:17px;
-  z-index:7;
+  z-index:8;
+  max-width:96vw;
+  overflow-x:auto;
 }
 
 .tool{
-  min-width:62px;
-  height:58px;
+  min-width:64px;
+  height:60px;
   border:0;
   border-radius:12px;
-  color:#fff;
-  background:#28382a;
-  font-size:11px;
-  font-weight:bold;
+  background:#29372a;
+  color:white;
   cursor:pointer;
+  font-size:10px;
+  font-weight:bold;
 }
 
 .tool span{
   display:block;
-  font-size:23px;
+  font-size:22px;
   margin-bottom:3px;
 }
 
 .tool.active{
-  background:#5b873d;
-  outline:2px solid #d7f09a;
+  background:#668b43;
+  outline:2px solid #e0efa5;
 }
 
-#mobileControls{
+#mobile{
   position:fixed;
   left:15px;
-  bottom:18px;
-  width:145px;
-  height:145px;
-  z-index:8;
+  bottom:25px;
+  width:150px;
+  height:150px;
+  z-index:10;
   display:none;
 }
 
-.dpad{
+.d{
   position:absolute;
   width:50px;
   height:50px;
   border:0;
   border-radius:13px;
-  background:rgba(25,35,26,.9);
+  background:rgba(24,34,25,.92);
   color:#fff;
-  font-size:23px;
+  font-size:22px;
 }
 
-#up{left:47px;top:0}
-#down{left:47px;bottom:0}
-#left{left:0;top:47px}
-#right{right:0;top:47px}
+#u{left:50px;top:0}
+#d{left:50px;bottom:0}
+#l{left:0;top:50px}
+#r{right:0;top:50px}
 
 #action{
   position:fixed;
-  right:18px;
-  bottom:30px;
-  width:76px;
-  height:76px;
+  right:20px;
+  bottom:28px;
+  width:78px;
+  height:78px;
   border-radius:50%;
-  border:2px solid #d8ef9a;
-  background:#547c38;
-  color:white;
+  border:2px solid #dff19d;
+  background:#5b823b;
+  color:#fff;
   font-weight:bold;
-  z-index:8;
+  z-index:10;
   display:none;
 }
 
-#menu{
+.overlay{
   position:fixed;
   inset:0;
+  background:rgba(4,8,5,.72);
   z-index:30;
-  background:
-    radial-gradient(circle at 50% 20%,rgba(130,190,80,.18),transparent 35%),
-    linear-gradient(180deg,#172719,#0b110c);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.menuBox{
-  width:min(650px,92vw);
-  padding:35px;
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:25px;
-  background:rgba(19,29,20,.92);
-  box-shadow:0 30px 90px rgba(0,0,0,.45);
-  text-align:center;
-}
-
-.logo{
-  font-size:clamp(35px,7vw,70px);
-  font-weight:900;
-  letter-spacing:2px;
-  color:#dff29b;
-}
-
-.subtitle{
-  margin-top:8px;
-  color:#b6c7b4;
-  font-size:15px;
-}
-
-.menuButtons{
-  display:grid;
-  gap:11px;
-  margin-top:28px;
-}
-
-.menuBtn{
-  border:0;
-  border-radius:13px;
-  padding:15px;
-  color:#fff;
-  background:#476d37;
-  font-weight:bold;
-  cursor:pointer;
-  font-size:15px;
-}
-
-.menuBtn:hover{
-  filter:brightness(1.15);
-}
-
-.small{
-  margin-top:20px;
-  color:#899789;
-  font-size:12px;
-  line-height:1.6;
-}
-
-#inventory{
-  position:fixed;
-  inset:0;
-  z-index:25;
-  background:rgba(7,12,8,.7);
   display:none;
   align-items:center;
   justify-content:center;
 }
 
-.invBox{
-  width:min(650px,92vw);
-  max-height:80vh;
-  overflow:auto;
-  background:#172319;
-  border:1px solid #536c50;
-  border-radius:20px;
-  padding:20px;
-  color:#fff;
-}
-
-.invGrid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
-  gap:9px;
-  margin-top:15px;
-}
-
-.item{
-  background:#263627;
-  border-radius:12px;
-  padding:12px;
-  min-height:75px;
-}
-
-.close{
-  margin-top:15px;
-  width:100%;
-  padding:12px;
-  border:0;
-  border-radius:11px;
-  background:#4e713d;
-  color:#fff;
-  font-weight:bold;
-}
-
-#shop{
-  position:fixed;
-  inset:0;
-  z-index:26;
-  background:rgba(5,9,6,.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-.shopBox{
+.box{
   width:min(700px,94vw);
-  max-height:84vh;
+  max-height:85vh;
   overflow:auto;
-  background:#1a261b;
-  border:1px solid #657b5d;
+  background:#18251a;
+  color:#fff;
+  border:1px solid #63785d;
   border-radius:20px;
   padding:20px;
-  color:#fff;
+  box-shadow:0 25px 70px rgba(0,0,0,.5);
 }
 
-.shopGrid{
+.grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:10px;
   margin-top:15px;
 }
 
-.shopItem{
+.card{
   background:#29382a;
   border-radius:13px;
   padding:13px;
 }
 
-.shopItem button{
-  margin-top:9px;
+.card button,
+.close{
   width:100%;
-  padding:9px;
+  margin-top:9px;
   border:0;
-  border-radius:9px;
-  background:#668b43;
+  border-radius:10px;
+  padding:11px;
+  background:#638943;
+  color:white;
+  font-weight:bold;
+}
+
+#seedPicker .seed{
+  background:#29382a;
+  color:white;
+  border:0;
+  border-radius:14px;
+  padding:15px;
+  font-size:14px;
+}
+
+#menu{
+  position:fixed;
+  inset:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  background:
+    radial-gradient(circle at 50% 15%,rgba(128,180,82,.2),transparent 35%),
+    linear-gradient(#172719,#0a100b);
+}
+
+.menu{
+  width:min(650px,92vw);
+  background:rgba(19,29,20,.95);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:25px;
+  padding:35px;
+  text-align:center;
+}
+
+.logo{
+  font-size:clamp(36px,8vw,72px);
+  font-weight:900;
+  color:#dff29b;
+  letter-spacing:2px;
+}
+
+.menu p{
+  margin-top:8px;
+  color:#b8c6b7;
+}
+
+.menu button{
+  width:100%;
+  margin-top:12px;
+  padding:15px;
+  border:0;
+  border-radius:13px;
+  background:#527d3c;
   color:#fff;
   font-weight:bold;
+  font-size:15px;
 }
 
 @media(max-width:700px){
   #toolbar{
-    bottom:9px;
-    left:50%;
-    width:95vw;
-    overflow-x:auto;
-    justify-content:flex-start;
+    bottom:8px;
   }
 
   .tool{
     min-width:55px;
-    height:53px;
+    height:54px;
   }
 
-  #mobileControls,
+  #mobile,
   #action{
     display:block;
   }
 
-  #status{
-    min-width:0;
+  #message{
+    bottom:180px;
   }
 
-  #status .bar{
-    width:105px;
-  }
-
-  #info{
-    min-width:0;
+  #hud{
     font-size:11px;
   }
 
-  #message{
-    bottom:185px;
+  .bar{
+    width:105px;
   }
 }
 </style>
@@ -383,129 +305,227 @@ html,body{
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div class="panel" id="status">
-    <div>👤 <b id="playerName">Raka</b></div>
-    <div>💰 Rp <span id="money">1500</span></div>
+  <div class="panel">
+    👤 <b id="name">RAKA</b><br>
+    💰 Rp <span id="money">1500</span>
     <div>⚡ Energi</div>
     <div class="bar"><div id="energyBar"></div></div>
   </div>
 
-  <div class="panel" id="info">
-    <div>📅 Hari <span id="day">1</span> • Musim <span id="season">Semi</span></div>
-    <div>🕐 <span id="clock">06:00</span></div>
-    <div>🌤️ <span id="weather">Cerah</span></div>
-    <div>⭐ Tahun <span id="year">1</span></div>
+  <div class="panel" style="text-align:right">
+    📅 Hari <span id="day">1</span> • <span id="season">Semi</span><br>
+    🕐 <span id="time">06:00</span><br>
+    🌦️ <span id="weather">Cerah</span><br>
+    ⭐ Tahun <span id="year">1</span>
   </div>
 </div>
 
 <div id="message"></div>
 
 <div id="toolbar">
-  <button class="tool active" data-tool="hoe"><span>⛏️</span>CANGKUL</button>
-  <button class="tool" data-tool="seed"><span>🌱</span>BIBIT</button>
-  <button class="tool" data-tool="water"><span>💧</span>SIRAM</button>
-  <button class="tool" data-tool="harvest"><span>🌾</span>PANEN</button>
-  <button class="tool" data-tool="axe"><span>🪓</span>TEBANG</button>
-  <button class="tool" data-tool="pickaxe"><span>⛏</span>TAMBANG</button>
-  <button class="tool" data-tool="hand"><span>✋</span>INTERAKSI</button>
-  <button class="tool" id="inventoryBtn"><span>🎒</span>ITEM</button>
+
+<button class="tool active" data-tool="hoe">
+<span>⛏️</span>CANGKUL
+</button>
+
+<button class="tool" data-tool="seed">
+<span>🌱</span>BIBIT
+</button>
+
+<button class="tool" data-tool="water">
+<span>💧</span>SIRAM
+</button>
+
+<button class="tool" data-tool="harvest">
+<span>🌾</span>PANEN
+</button>
+
+<button class="tool" data-tool="axe">
+<span>🪓</span>KAPAK
+</button>
+
+<button class="tool" data-tool="pickaxe">
+<span>⛏</span>PICKAXE
+</button>
+
+<button class="tool" data-tool="hand">
+<span>✋</span>INTERAKSI
+</button>
+
+<button class="tool" id="inventoryBtn">
+<span>🎒</span>ITEM
+</button>
+
 </div>
 
-<div id="mobileControls">
-  <button class="dpad" id="up">▲</button>
-  <button class="dpad" id="down">▼</button>
-  <button class="dpad" id="left">◀</button>
-  <button class="dpad" id="right">▶</button>
+<div id="mobile">
+<button class="d" id="u">▲</button>
+<button class="d" id="d">▼</button>
+<button class="d" id="l">◀</button>
+<button class="d" id="r">▶</button>
 </div>
 
 <button id="action">AKSI</button>
 
+<!-- MENU -->
+
 <div id="menu">
-  <div class="menuBox">
-    <div class="logo">ALFA FARM LIFE</div>
-    <div class="subtitle">V2.0 • Farming & Life Simulation</div>
+<div class="menu">
 
-    <div class="menuButtons">
-      <button class="menuBtn" id="newGame">🌱 MULAI PETUALANGAN BARU</button>
-      <button class="menuBtn" id="continueGame">▶️ LANJUTKAN GAME</button>
-    </div>
+<div class="logo">ALFA FARM LIFE</div>
 
-    <div class="small">
-      Dunia original • Karakter original • Farming • Peternakan • NPC • Toko • Cuaca • Save Game
-      <br>
-      Keyboard: WASD / Arrow • E = aksi • I = inventory
-    </div>
-  </div>
+<p>V3.0 • REAL FARMING EDITION</p>
+
+<button id="newGame">🌱 GAME BARU</button>
+<button id="continue">▶ LANJUTKAN GAME</button>
+
+<p style="font-size:12px;margin-top:18px">
+WASD / Arrow = berjalan<br>
+E = menggunakan alat / interaksi<br>
+I = inventory
+</p>
+
+</div>
 </div>
 
-<div id="inventory">
-  <div class="invBox">
-    <h2>🎒 INVENTORY</h2>
-    <div id="inventoryGrid" class="invGrid"></div>
-    <button class="close" id="closeInventory">TUTUP</button>
-  </div>
+<!-- SEED PICKER -->
+
+<div class="overlay" id="seedPicker">
+<div class="box">
+
+<h2>🌱 PILIH BIBIT</h2>
+
+<div class="grid">
+
+<button class="seed" data-seed="turnip">
+🥕<br>
+<b>LOBak</b><br>
+Jumlah: <span id="st">0</span>
+</button>
+
+<button class="seed" data-seed="corn">
+🌽<br>
+<b>JAGUNG</b><br>
+Jumlah: <span id="sc">0</span>
+</button>
+
+<button class="seed" data-seed="pumpkin">
+🎃<br>
+<b>LABU</b><br>
+Jumlah: <span id="sp">0</span>
+</button>
+
+<button class="seed" data-seed="carrot">
+🥕<br>
+<b>WORTEL</b><br>
+Jumlah: <span id="sr">0</span>
+</button>
+
 </div>
 
-<div id="shop">
-  <div class="shopBox">
-    <h2>🏪 TOKO SARI</h2>
-    <p style="margin-top:6px;color:#aebcab">Beli bibit untuk kebunmu.</p>
+<button class="close" id="closeSeed">BATAL</button>
 
-    <div class="shopGrid">
+</div>
+</div>
 
-      <div class="shopItem">
-        <b>🌱 Bibit Lobak</b>
-        <p>Harga: Rp 40</p>
-        <button data-buy="turnip">BELI</button>
-      </div>
+<!-- INVENTORY -->
 
-      <div class="shopItem">
-        <b>🌽 Bibit Jagung</b>
-        <p>Harga: Rp 70</p>
-        <button data-buy="corn">BELI</button>
-      </div>
+<div class="overlay" id="inventory">
 
-      <div class="shopItem">
-        <b>🎃 Bibit Labu</b>
-        <p>Harga: Rp 100</p>
-        <button data-buy="pumpkin">BELI</button>
-      </div>
+<div class="box">
 
-      <div class="shopItem">
-        <b>🥕 Bibit Wortel</b>
-        <p>Harga: Rp 55</p>
-        <button data-buy="carrot">BELI</button>
-      </div>
+<h2>🎒 INVENTORY</h2>
 
-    </div>
+<div id="inventoryGrid" class="grid"></div>
 
-    <button class="close" id="closeShop">TUTUP TOKO</button>
-  </div>
+<button class="close" id="sell">
+💰 JUAL SEMUA HASIL
+</button>
+
+<button class="close" id="closeInventory">
+TUTUP
+</button>
+
+</div>
+
+</div>
+
+<!-- SHOP -->
+
+<div class="overlay" id="shop">
+
+<div class="box">
+
+<h2>🏪 TOKO SARI</h2>
+
+<p style="margin-top:6px;color:#aebcac">
+Beli bibit untuk kebun.
+</p>
+
+<div class="grid">
+
+<div class="card">
+🌱 <b>Bibit Lobak</b>
+<p>Rp 40</p>
+<button data-buy="turnip">BELI</button>
+</div>
+
+<div class="card">
+🌽 <b>Bibit Jagung</b>
+<p>Rp 70</p>
+<button data-buy="corn">BELI</button>
+</div>
+
+<div class="card">
+🎃 <b>Bibit Labu</b>
+<p>Rp 100</p>
+<button data-buy="pumpkin">BELI</button>
+</div>
+
+<div class="card">
+🥕 <b>Bibit Wortel</b>
+<p>Rp 55</p>
+<button data-buy="carrot">BELI</button>
+</div>
+
+</div>
+
+<button class="close" id="closeShop">
+TUTUP TOKO
+</button>
+
+</div>
 </div>
 
 <script>
 "use strict";
 
-/* =========================================================
-   ALFA FARM LIFE V2.0
-   ORIGINAL FARMING GAME
-========================================================= */
+/* =====================================================
+   ALFA FARM LIFE V3.0
+   REAL FARMING SYSTEM
+===================================================== */
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
 
-let W = innerWidth;
-let H = innerHeight;
+let W=innerWidth;
+let H=innerHeight;
 
 function resize(){
-  W = innerWidth;
-  H = innerHeight;
-  canvas.width = W * devicePixelRatio;
-  canvas.height = H * devicePixelRatio;
-  canvas.style.width = W + "px";
-  canvas.style.height = H + "px";
-  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  W=innerWidth;
+  H=innerHeight;
+
+  const dpr=Math.min(2,devicePixelRatio||1);
+
+  canvas.width=W*dpr;
+  canvas.height=H*dpr;
+
+  canvas.style.width=W+"px";
+  canvas.style.height=H+"px";
+
+  ctx.setTransform(dpr,0,0,dpr,0,0);
 }
+
 addEventListener("resize",resize);
 resize();
 
@@ -513,148 +533,172 @@ resize();
    WORLD
 ========================= */
 
-const TILE = 48;
-const MAP_W = 42;
-const MAP_H = 28;
+const TILE=48;
+const MW=44;
+const MH=30;
 
-const world = {
-  cameraX:0,
-  cameraY:0,
-  running:false
-};
+let cameraX=0;
+let cameraY=0;
 
-const player = {
-  name:"Raka",
+const map=[];
+
+for(let y=0;y<MH;y++){
+  map[y]=[];
+
+  for(let x=0;x<MW;x++){
+    map[y][x]="grass";
+  }
+}
+
+/* paths */
+
+for(let x=0;x<MW;x++){
+  map[14][x]="path";
+}
+
+for(let y=0;y<MH;y++){
+  map[y][20]="path";
+}
+
+/* farm */
+
+for(let y=4;y<12;y++){
+  for(let x=3;x<16;x++){
+    map[y][x]="farm";
+  }
+}
+
+/* river */
+
+for(let y=0;y<MH;y++){
+  map[y][35]="water";
+  map[y][36]="water";
+}
+
+/* bridge */
+
+map[13][35]="path";
+map[13][36]="path";
+map[14][35]="path";
+map[14][36]="path";
+
+/* =========================
+   PLAYER
+========================= */
+
+const player={
   x:8,
   y:14,
   dir:"down",
-  speed:3.2,
   energy:100,
   maxEnergy:100,
-  moving:false
+  anim:0,
+  moving:false,
+  selectedSeed:"turnip"
 };
 
-let money = 1500;
+let money=1500;
 
-const inventory = {
+/* =========================
+   INVENTORY
+========================= */
+
+const inv={
   turnipSeed:5,
   cornSeed:3,
   pumpkinSeed:2,
   carrotSeed:3,
+
   turnip:0,
   corn:0,
   pumpkin:0,
   carrot:0,
+
   egg:0,
   milk:0,
   wood:0,
   stone:0
 };
 
-const cropInfo = {
+/* =========================
+   CROP DATA
+========================= */
+
+const cropsData={
   turnip:{
     name:"Lobak",
     icon:"🥕",
     days:3,
-    sell:120
+    price:120
   },
+
   corn:{
     name:"Jagung",
     icon:"🌽",
     days:5,
-    sell:220
+    price:220
   },
+
   pumpkin:{
     name:"Labu",
     icon:"🎃",
     days:7,
-    sell:360
+    price:360
   },
+
   carrot:{
     name:"Wortel",
     icon:"🥕",
     days:4,
-    sell:170
+    price:170
   }
 };
 
-const map = [];
-const crops = [];
-const objects = [];
-const npcs = [];
-const animals = [];
+const crops=[];
 
-for(let y=0;y<MAP_H;y++){
-  map[y]=[];
-  for(let x=0;x<MAP_W;x++){
-    map[y][x]="grass";
-  }
-}
+/* =========================
+   OBJECTS
+========================= */
 
-/* paths */
-for(let x=0;x<MAP_W;x++){
-  map[13][x]="path";
-  map[14][x]="path";
-}
+const objects=[];
 
-for(let y=0;y<MAP_H;y++){
-  map[y][20]="path";
-}
+/* buildings */
 
-/* farm soil area */
-for(let y=4;y<=11;y++){
-  for(let x=4;x<=15;x++){
-    map[y][x]="farm";
-  }
-}
-
-/* river */
-for(let y=0;y<MAP_H;y++){
-  map[y][33]="water";
-  map[y][34]="water";
-}
-
-/* bridge */
-map[13][33]="path";
-map[14][33]="path";
-map[13][34]="path";
-map[14][34]="path";
-
-/* houses/buildings */
 objects.push({
   type:"house",
-  x:7,
-  y:17,
-  w:6,
-  h:4,
-  name:"Rumah Raka"
+  x:6,
+  y:18,
+  w:7,
+  h:4
 });
 
 objects.push({
   type:"shop",
   x:23,
   y:8,
-  w:5,
-  h:4,
-  name:"Toko Sari"
+  w:6,
+  h:4
 });
 
 objects.push({
   type:"barn",
   x:24,
-  y:17,
-  w:7,
-  h:4,
-  name:"Kandang"
+  y:18,
+  w:8,
+  h:4
 });
 
 /* trees */
-for(let i=0;i<75;i++){
-  let x=2+Math.floor(Math.random()*(MAP_W-4));
-  let y=2+Math.floor(Math.random()*(MAP_H-4));
 
-  if(map[y][x]==="farm" || map[y][x]==="water") continue;
-  if(x>20 && x<31 && y>6 && y<23) continue;
+for(let i=0;i<65;i++){
+
+  const x=2+Math.floor(Math.random()*(MW-4));
+  const y=2+Math.floor(Math.random()*(MH-4));
+
+  if(map[y][x]==="water")continue;
+  if(map[y][x]==="farm")continue;
+
+  if(x>=21&&x<=33&&y>=6&&y<=24)continue;
 
   objects.push({
     type:"tree",
@@ -665,11 +709,14 @@ for(let i=0;i<75;i++){
 }
 
 /* stones */
-for(let i=0;i<35;i++){
-  let x=2+Math.floor(Math.random()*(MAP_W-4));
-  let y=2+Math.floor(Math.random()*(MAP_H-4));
 
-  if(map[y][x]==="farm" || map[y][x]==="water") continue;
+for(let i=0;i<30;i++){
+
+  const x=2+Math.floor(Math.random()*(MW-4));
+  const y=2+Math.floor(Math.random()*(MH-4));
+
+  if(map[y][x]==="water")continue;
+  if(map[y][x]==="farm")continue;
 
   objects.push({
     type:"stone",
@@ -679,63 +726,63 @@ for(let i=0;i<35;i++){
   });
 }
 
-/* NPC */
-npcs.push({
-  name:"Sari",
-  role:"Pemilik Toko",
-  x:25,
-  y:13,
-  skin:"#d49a72",
-  hair:"#4b2d1e",
-  shirt:"#e9828b",
-  pants:"#486b9b",
-  targetX:25,
-  targetY:13
-});
+/* =========================
+   NPC
+========================= */
 
-npcs.push({
-  name:"Bima",
-  role:"Petani",
-  x:22,
-  y:16,
-  skin:"#b87954",
-  hair:"#17130f",
-  shirt:"#547da0",
-  pants:"#705b45",
-  targetX:22,
-  targetY:16
-});
+const npcs=[
+  {
+    name:"Sari",
+    role:"Pemilik Toko",
+    x:26,
+    y:14,
+    skin:"#c98765",
+    hair:"#4b2a1c",
+    shirt:"#d97885",
+    pants:"#49678b"
+  },
 
-/* animals */
-animals.push({
-  type:"chicken",
-  name:"Milo",
-  x:27,
-  y:15,
-  homeX:27,
-  homeY:15,
-  eggTimer:0
-});
+  {
+    name:"Bima",
+    role:"Petani",
+    x:22,
+    y:16,
+    skin:"#b97954",
+    hair:"#17120e",
+    shirt:"#4d779b",
+    pants:"#66513d"
+  }
+];
 
-animals.push({
-  type:"chicken",
-  name:"Luna",
-  x:29,
-  y:15,
-  homeX:29,
-  homeY:15,
-  eggTimer:0
-});
+/* =========================
+   ANIMALS
+========================= */
 
-animals.push({
-  type:"cow",
-  name:"Momo",
-  x:27,
-  y:22,
-  homeX:27,
-  homeY:22,
-  eggTimer:0
-});
+const animals=[
+  {
+    type:"chicken",
+    name:"Milo",
+    x:27,
+    y:16,
+    timer:0
+  },
+
+  {
+    type:"chicken",
+    name:"Luna",
+    x:29,
+    y:16,
+    timer:0
+  },
+
+  {
+    type:"cow",
+    name:"Momo",
+    x:28,
+    y:23,
+    timer:0
+  }
+];
 
 /* =========================
    TIME
@@ -746,92 +793,57 @@ let season="Semi";
 let year=1;
 let hour=6;
 let minute=0;
+let weather="Cerah";
 
 const seasons=["Semi","Panas","Gugur","Dingin"];
 
-let weather="Cerah";
-
 function randomWeather(){
-  const list=["Cerah","Cerah","Berawan","Hujan"];
-  weather=list[Math.floor(Math.random()*list.length)];
-}
 
-/* =========================
-   CROPS
-========================= */
+  const a=[
+    "Cerah",
+    "Cerah",
+    "Berawan",
+    "Hujan"
+  ];
 
-function cropAt(x,y){
-  return crops.find(c=>c.x===x && c.y===y);
-}
-
-function soilAt(x,y){
-  return map[y] && map[y][x]==="tilled";
-}
-
-/* =========================
-   COLLISION
-========================= */
-
-function objectAt(x,y){
-  return objects.find(o=>{
-    if(o.type==="tree" || o.type==="stone"){
-      return o.x===x && o.y===y;
-    }
-
-    return (
-      x>=o.x &&
-      x<o.x+o.w &&
-      y>=o.y &&
-      y<o.y+o.h
-    );
-  });
-}
-
-function blocked(x,y){
-  if(x<0 || y<0 || x>=MAP_W || y>=MAP_H) return true;
-
-  if(map[y][x]==="water") return true;
-
-  const obj=objectAt(x,y);
-
-  if(obj && ["house","shop","barn","tree","stone"].includes(obj.type)){
-    return true;
-  }
-
-  return false;
+  weather=a[Math.floor(Math.random()*a.length)];
 }
 
 /* =========================
    MESSAGE
 ========================= */
 
-let messageTimer=null;
+let msgTimer;
 
-function showMessage(text){
+function message(t){
+
   const el=document.getElementById("message");
-  el.textContent=text;
+
+  el.textContent=t;
   el.classList.add("show");
 
-  clearTimeout(messageTimer);
+  clearTimeout(msgTimer);
 
-  messageTimer=setTimeout(()=>{
+  msgTimer=setTimeout(()=>{
     el.classList.remove("show");
-  },2200);
+  },2000);
 }
 
 /* =========================
    SAVE
 ========================= */
 
-function saveGame(){
+function save(){
+
   const data={
     player:{
       x:player.x,
       y:player.y,
       dir:player.dir
     },
+
     money,
-    inventory,
+    inv,
     crops,
     day,
     season,
@@ -842,34 +854,38 @@ function saveGame(){
   };
 
   localStorage.setItem(
-    "ALFA_FARM_LIFE_V2_SAVE",
+    "ALFA_FARM_LIFE_V3",
     JSON.stringify(data)
   );
 }
 
-function loadGame(){
-  try{
-    const raw=localStorage.getItem("ALFA_FARM_LIFE_V2_SAVE");
+function load(){
 
-    if(!raw){
-      showMessage("Belum ada save game.");
-      return false;
-    }
+  const raw=localStorage.getItem(
+    "ALFA_FARM_LIFE_V3"
+  );
+
+  if(!raw)return false;
+
+  try{
 
     const data=JSON.parse(raw);
 
     player.x=data.player.x;
     player.y=data.player.y;
-    player.dir=data.player.dir || "down";
+    player.dir=data.player.dir;
 
     money=data.money;
 
-    Object.keys(inventory).forEach(k=>{
-      inventory[k]=data.inventory[k] || 0;
+    Object.keys(inv).forEach(k=>{
+      inv[k]=data.inv[k]||0;
     });
 
     crops.length=0;
-    data.crops.forEach(c=>crops.push(c));
+
+    data.crops.forEach(c=>{
+      crops.push(c);
+    });
 
     day=data.day;
     season=data.season;
@@ -879,54 +895,62 @@ function loadGame(){
     weather=data.weather;
 
     updateHUD();
-    showMessage("Game berhasil dimuat.");
+
     return true;
 
-  }catch(err){
-    console.error(err);
-    showMessage("Save rusak. Memulai game baru.");
+  }catch(e){
+
+    console.error(e);
     return false;
   }
 }
 
 /* =========================
-   GAME START
+   COLLISION
 ========================= */
 
-function startGame(newGame=false){
+function objectAt(x,y){
 
-  if(newGame){
-    player.x=8;
-    player.y=14;
-    player.dir="down";
-    player.energy=100;
+  return objects.find(o=>{
 
-    money=1500;
+    if(
+      o.type==="tree"||
+      o.type==="stone"
+    ){
+      return o.x===x&&o.y===y;
+    }
 
-    Object.keys(inventory).forEach(k=>inventory[k]=0);
+    return (
+      x>=o.x&&
+      x<o.x+o.w&&
+      y>=o.y&&
+      y<o.y+o.h
+    );
+  });
+}
 
-    inventory.turnipSeed=5;
-    inventory.cornSeed=3;
-    inventory.pumpkinSeed=2;
-    inventory.carrotSeed=3;
+function blocked(x,y){
 
-    crops.length=0;
+  if(x<0||y<0||x>=MW||y>=MH)return true;
 
-    day=1;
-    season="Semi";
-    year=1;
-    hour=6;
-    minute=0;
-    randomWeather();
+  if(map[y][x]==="water")return true;
 
-    saveGame();
+  const o=objectAt(x,y);
+
+  if(o){
+
+    if(
+      o.type==="tree"||
+      o.type==="stone"||
+      o.type==="house"||
+      o.type==="shop"||
+      o.type==="barn"
+    ){
+      return true;
+    }
   }
 
-  world.running=true;
-  document.getElementById("menu").style.display="none";
-
-  updateHUD();
-  showMessage("Selamat datang di ALFA FARM LIFE!");
+  return false;
 }
 
 /* =========================
@@ -936,18 +960,19 @@ function startGame(newGame=false){
 const keys={};
 
 addEventListener("keydown",e=>{
+
   keys[e.key.toLowerCase()]=true;
 
   if(e.key.toLowerCase()==="e"){
-    interact();
+    action();
   }
 
   if(e.key.toLowerCase()==="i"){
-    toggleInventory();
+    inventoryOpen();
   }
 
   if(e.key==="Escape"){
-    closeAllPanels();
+    closePanels();
   }
 });
 
@@ -957,286 +982,92 @@ addEventListener("keyup",e=>{
 
 function move(dx,dy){
 
-  if(!world.running) return;
+  if(!running)return;
 
-  let nx=player.x+dx;
-  let ny=player.y+dy;
+  const nx=player.x+dx;
+  const ny=player.y+dy;
 
-  if(dx>0) player.dir="right";
-  if(dx<0) player.dir="left";
-  if(dy>0) player.dir="down";
-  if(dy<0) player.dir="up";
+  if(dx>0)player.dir="right";
+  if(dx<0)player.dir="left";
+  if(dy>0)player.dir="down";
+  if(dy<0)player.dir="up";
 
   if(!blocked(Math.round(nx),Math.round(ny))){
 
     player.x=nx;
     player.y=ny;
 
-    player.energy=Math.max(0,player.energy-.015);
+    player.moving=true;
+    player.anim+=.25;
+
+    player.energy=Math.max(
+      0,
+      player.energy-.01
+    );
   }
 }
 
 /* =========================
-   MOBILE
+   TARGET
 ========================= */
 
-function holdButton(id,dx,dy){
-  const btn=document.getElementById(id);
-
-  let timer=null;
-
-  const start=e=>{
-    e.preventDefault();
-
-    move(dx,dy);
-
-    timer=setInterval(()=>{
-      move(dx,dy);
-    },70);
-  };
-
-  const stop=()=>{
-    clearInterval(timer);
-  };
-
-  btn.addEventListener("pointerdown",start);
-  btn.addEventListener("pointerup",stop);
-  btn.addEventListener("pointerleave",stop);
-  btn.addEventListener("pointercancel",stop);
-}
-
-holdButton("up",0,-1);
-holdButton("down",0,1);
-holdButton("left",-1,0);
-holdButton("right",1,0);
-
-document.getElementById("action").onclick=interact;
-
-/* =========================
-   TOOL
-========================= */
-
-let selectedTool="hoe";
-
-document.querySelectorAll(".tool[data-tool]").forEach(btn=>{
-  btn.onclick=()=>{
-    selectedTool=btn.dataset.tool;
-
-    document.querySelectorAll(".tool[data-tool]")
-      .forEach(b=>b.classList.remove("active"));
-
-    btn.classList.add("active");
-
-    showMessage("Alat: "+btn.textContent.trim());
-  };
-});
-
-function targetTile(){
+function target(){
 
   let x=Math.round(player.x);
   let y=Math.round(player.y);
 
-  if(player.dir==="up") y--;
-  if(player.dir==="down") y++;
-  if(player.dir==="left") x--;
-  if(player.dir==="right") x++;
+  if(player.dir==="up")y--;
+  if(player.dir==="down")y++;
+  if(player.dir==="left")x--;
+  if(player.dir==="right")x++;
 
   return {x,y};
 }
 
 /* =========================
-   FARMING ACTION
+   TOOL SYSTEM
 ========================= */
 
-function useTool(){
+let selectedTool="hoe";
 
-  if(player.energy<=2){
-    showMessage("Energi habis. Istirahat di rumah.");
-    return;
-  }
+document.querySelectorAll("[data-tool]").forEach(btn=>{
 
-  const {x,y}=targetTile();
+  btn.onclick=()=>{
 
-  if(x<0 || y<0 || x>=MAP_W || y>=MAP_H) return;
+    selectedTool=btn.dataset.tool;
 
-  if(selectedTool==="hoe"){
-    hoe(x,y);
-  }
+    document
+      .querySelectorAll("[data-tool]")
+      .forEach(b=>b.classList.remove("active"));
 
-  if(selectedTool==="seed"){
-    plant(x,y);
-  }
+    btn.classList.add("active");
 
-  if(selectedTool==="water"){
-    water(x,y);
-  }
+    if(selectedTool==="seed"){
+      openSeeds();
+      return;
+    }
 
-  if(selectedTool==="harvest"){
-    harvest(x,y);
-  }
-
-  if(selectedTool==="axe"){
-    chop(x,y);
-  }
-
-  if(selectedTool==="pickaxe"){
-    mine(x,y);
-  }
-
-  player.energy=Math.max(0,player.energy-1);
-}
-
-function hoe(x,y){
-
-  if(map[y][x]==="farm"){
-    map[y][x]="tilled";
-    showMessage("Tanah berhasil dicangkul.");
-    return;
-  }
-
-  if(map[y][x]==="tilled"){
-    showMessage("Tanah sudah siap ditanami.");
-    return;
-  }
-
-  showMessage("Cangkul hanya bisa digunakan di area kebun.");
-}
-
-function plant(x,y){
-
-  if(map[y][x]!=="tilled"){
-    showMessage("Cangkul tanah dulu.");
-    return;
-  }
-
-  if(cropAt(x,y)){
-    showMessage("Di sini sudah ada tanaman.");
-    return;
-  }
-
-  let type=null;
-
-  if(inventory.turnipSeed>0) type="turnip";
-  else if(inventory.cornSeed>0) type="corn";
-  else if(inventory.pumpkinSeed>0) type="pumpkin";
-  else if(inventory.carrotSeed>0) type="carrot";
-
-  if(!type){
-    showMessage("Bibit habis. Beli di Toko Sari.");
-    return;
-  }
-
-  inventory[type+"Seed"]--;
-
-  crops.push({
-    x,
-    y,
-    type,
-    age:0,
-    watered:false,
-    alive:true
-  });
-
-  showMessage("Bibit "+cropInfo[type].name+" ditanam.");
-}
-
-function water(x,y){
-
-  const crop=cropAt(x,y);
-
-  if(!crop){
-    showMessage("Tidak ada tanaman di sini.");
-    return;
-  }
-
-  crop.watered=true;
-  showMessage("Tanaman berhasil disiram.");
-}
-
-function harvest(x,y){
-
-  const crop=cropAt(x,y);
-
-  if(!crop){
-    showMessage("Tidak ada tanaman.");
-    return;
-  }
-
-  const info=cropInfo[crop.type];
-
-  if(crop.age<info.days){
-    showMessage(info.name+" belum siap dipanen.");
-    return;
-  }
-
-  inventory[crop.type]++;
-  crops.splice(crops.indexOf(crop),1);
-
-  showMessage("Panen "+info.name+" berhasil! 🎉");
-}
-
-function chop(x,y){
-
-  const obj=objects.find(o=>
-    o.type==="tree" &&
-    o.x===x &&
-    o.y===y
-  );
-
-  if(!obj){
-    showMessage("Tidak ada pohon di sini.");
-    return;
-  }
-
-  obj.hp--;
-
-  if(obj.hp<=0){
-    inventory.wood+=3;
-    objects.splice(objects.indexOf(obj),1);
-    showMessage("Pohon ditebang. +3 kayu");
-  }else{
-    showMessage("Pohon terkena kapak.");
-  }
-}
-
-function mine(x,y){
-
-  const obj=objects.find(o=>
-    o.type==="stone" &&
-    o.x===x &&
-    o.y===y
-  );
-
-  if(!obj){
-    showMessage("Tidak ada batu di sini.");
-    return;
-  }
-
-  obj.hp--;
-
-  if(obj.hp<=0){
-    inventory.stone+=2;
-    objects.splice(objects.indexOf(obj),1);
-    showMessage("Batu dihancurkan. +2 batu");
-  }else{
-    showMessage("Batu dipukul.");
-  }
-}
+    message(
+      "Alat aktif: "+btn.textContent.trim()
+    );
+  };
+});
 
 /* =========================
-   INTERACTION
+   ACTION
 ========================= */
 
-function interact(){
+function action(){
 
-  if(!world.running) return;
+  if(!running)return;
 
-  const target=targetTile();
+  const t=target();
 
-  /* NPC */
+  /* first: NPC */
+
   const npc=npcs.find(n=>
-    Math.abs(n.x-target.x)<1 &&
-    Math.abs(n.y-target.y)<1
+    Math.abs(n.x-t.x)<=0.8 &&
+    Math.abs(n.y-t.y)<=0.8
   );
 
   if(npc){
@@ -1245,56 +1076,367 @@ function interact(){
   }
 
   /* animal */
+
   const animal=animals.find(a=>
-    Math.abs(a.x-target.x)<1 &&
-    Math.abs(a.y-target.y)<1
+    Math.abs(a.x-t.x)<=0.8 &&
+    Math.abs(a.y-t.y)<=0.8
   );
 
   if(animal){
-    petAnimal(animal);
+    pet(animal);
     return;
   }
 
-  /* buildings by proximity */
-  const nearShop=
-    target.x>=23 &&
-    target.x<=28 &&
-    target.y>=7 &&
-    target.y<=13;
+  /* shop entrance area */
 
-  if(nearShop){
+  if(
+    t.x>=22&&
+    t.x<=29&&
+    t.y>=7&&
+    t.y<=14
+  ){
     openShop();
     return;
   }
 
-  const nearHouse=
-    target.x>=6 &&
-    target.x<=14 &&
-    target.y>=16 &&
-    target.y<=22;
+  /* house */
 
-  if(nearHouse){
-    restAtHome();
+  if(
+    t.x>=5&&
+    t.x<=14&&
+    t.y>=17&&
+    t.y<=23
+  ){
+    rest();
     return;
   }
 
-  const nearBarn=
-    target.x>=23 &&
-    target.x<=32 &&
-    target.y>=16 &&
-    target.y<=23;
+  useTool();
+}
 
-  if(nearBarn){
-    showMessage("Kandang hewan. Hewan terlihat sehat.");
+/* =========================
+   USE TOOL
+========================= */
+
+function useTool(){
+
+  if(player.energy<=1){
+
+    message("⚡ Energi habis. Istirahat di rumah.");
     return;
   }
 
-  if(selectedTool==="hand"){
-    useTool();
-  }else{
-    useTool();
+  const t=target();
+
+  switch(selectedTool){
+
+    case"hoe":
+      hoe(t.x,t.y);
+      break;
+
+    case"seed":
+      plant(t.x,t.y);
+      break;
+
+    case"water":
+      water(t.x,t.y);
+      break;
+
+    case"harvest":
+      harvest(t.x,t.y);
+      break;
+
+    case"axe":
+      axe(t.x,t.y);
+      break;
+
+    case"pickaxe":
+      pickaxe(t.x,t.y);
+      break;
+
+    case"hand":
+      message("Tidak ada yang bisa diinteraksikan.");
+      break;
   }
 }
+
+/* =========================
+   HOE
+========================= */
+
+function hoe(x,y){
+
+  if(x<0||y<0||x>=MW||y>=MH)return;
+
+  if(map[y][x]==="farm"){
+
+    map[y][x]="tilled";
+
+    player.energy-=2;
+
+    message("⛏️ Tanah dicangkul.");
+
+    save();
+
+    return;
+  }
+
+  if(map[y][x]==="tilled"){
+
+    message("Tanah sudah dicangkul.");
+    return;
+  }
+
+  message("Cangkul hanya bisa dipakai di area kebun.");
+}
+
+/* =========================
+   PLANT
+========================= */
+
+function plant(x,y){
+
+  if(map[y]?.[x]!=="tilled"){
+
+    message("⛏️ Cangkul tanah terlebih dahulu.");
+    return;
+  }
+
+  if(crops.some(c=>c.x===x&&c.y===y)){
+
+    message("Sudah ada tanaman di sini.");
+    return;
+  }
+
+  const type=player.selectedSeed;
+
+  if(inv[type+"Seed"]<=0){
+
+    message("Bibit habis. Beli di toko.");
+    return;
+  }
+
+  inv[type+"Seed"]--;
+
+  crops.push({
+    x,
+    y,
+    type,
+    age:0,
+    watered:false
+  });
+
+  player.energy-=1;
+
+  message(
+    "🌱 "+cropsData[type].name+" berhasil ditanam!"
+  );
+
+  save();
+}
+
+/* =========================
+   WATER
+========================= */
+
+function water(x,y){
+
+  const crop=crops.find(
+    c=>c.x===x&&c.y===y
+  );
+
+  if(!crop){
+
+    message("💧 Tidak ada tanaman di sini.");
+    return;
+  }
+
+  if(crop.watered){
+
+    message("Tanaman sudah disiram hari ini.");
+    return;
+  }
+
+  crop.watered=true;
+
+  player.energy-=1;
+
+  message(
+    "💧 "+cropsData[crop.type].name+
+    " berhasil disiram!"
+  );
+
+  save();
+}
+
+/* =========================
+   HARVEST
+========================= */
+
+function harvest(x,y){
+
+  const index=crops.findIndex(
+    c=>c.x===x&&c.y===y
+  );
+
+  if(index<0){
+
+    message("🌾 Tidak ada tanaman di sini.");
+    return;
+  }
+
+  const crop=crops[index];
+  const info=cropsData[crop.type];
+
+  if(crop.age<info.days){
+
+    const left=info.days-crop.age;
+
+    message(
+      "🌱 Belum matang. "+left+" hari lagi."
+    );
+
+    return;
+  }
+
+  inv[crop.type]++;
+
+  crops.splice(index,1);
+
+  player.energy-=1;
+
+  message(
+    "🌾 Panen "+info.name+" berhasil!"
+  );
+
+  save();
+}
+
+/* =========================
+   AXE
+========================= */
+
+function axe(x,y){
+
+  const tree=objects.find(
+    o=>o.type==="tree"&&
+    o.x===x&&
+    o.y===y
+  );
+
+  if(!tree){
+
+    message("🪓 Tidak ada pohon di depan.");
+    return;
+  }
+
+  tree.hp--;
+
+  player.energy-=3;
+
+  if(tree.hp<=0){
+
+    inv.wood+=4;
+
+    objects.splice(
+      objects.indexOf(tree),
+      1
+    );
+
+    message("🪵 Pohon tumbang! +4 kayu.");
+
+  }else{
+
+    message(
+      "🪓 Pohon ditebang. "+
+      tree.hp+" pukulan lagi."
+    );
+  }
+
+  save();
+}
+
+/* =========================
+   PICKAXE
+========================= */
+
+function pickaxe(x,y){
+
+  const stone=objects.find(
+    o=>o.type==="stone"&&
+    o.x===x&&
+    o.y===y
+  );
+
+  if(!stone){
+
+    message("⛏ Tidak ada batu di depan.");
+    return;
+  }
+
+  stone.hp--;
+
+  player.energy-=3;
+
+  if(stone.hp<=0){
+
+    inv.stone+=3;
+
+    objects.splice(
+      objects.indexOf(stone),
+      1
+    );
+
+    message("🪨 Batu hancur! +3 batu.");
+
+  }else{
+
+    message(
+      "⛏ Batu dipukul. "+
+      stone.hp+" pukulan lagi."
+    );
+  }
+
+  save();
+}
+
+/* =========================
+   SEEDS
+========================= */
+
+function openSeeds(){
+
+  document.getElementById("st").textContent=inv.turnipSeed;
+  document.getElementById("sc").textContent=inv.cornSeed;
+  document.getElementById("sp").textContent=inv.pumpkinSeed;
+  document.getElementById("sr").textContent=inv.carrotSeed;
+
+  document.getElementById("seedPicker").style.display="flex";
+}
+
+document.querySelectorAll(".seed").forEach(btn=>{
+
+  btn.onclick=()=>{
+
+    const type=btn.dataset.seed;
+
+    player.selectedSeed=type;
+
+    document.getElementById(
+      "seedPicker"
+    ).style.display="none";
+
+    message(
+      "Bibit dipilih: "+
+      cropsData[type].name+
+      ". Tekan AKSI untuk menanam."
+    );
+  };
+});
+
+document.getElementById("closeSeed").onclick=()=>{
+  document.getElementById("seedPicker").style.display="none";
+};
 
 /* =========================
    NPC
@@ -1303,11 +1445,18 @@ function interact(){
 function talk(npc){
 
   if(npc.name==="Sari"){
-    showMessage("Sari: Selamat datang! Bibit baru sudah tersedia.");
-  }
 
-  if(npc.name==="Bima"){
-    showMessage("Bima: Tanaman harus disiram setiap hari agar cepat tumbuh.");
+    message(
+      "Sari: Selamat datang, Raka! "+
+      "Jangan lupa rawat kebunmu."
+    );
+
+  }else{
+
+    message(
+      "Bima: Siram tanaman setiap hari "+
+      "supaya cepat tumbuh."
+    );
   }
 }
 
@@ -1315,14 +1464,21 @@ function talk(npc){
    ANIMALS
 ========================= */
 
-function petAnimal(animal){
+function pet(animal){
 
   if(animal.type==="chicken"){
-    showMessage(animal.name+": Kukuruyuk! 🐔");
-  }
 
-  if(animal.type==="cow"){
-    showMessage(animal.name+": Moooo! 🐄");
+    message(
+      animal.name+
+      ": Kukuruyuk! 🐔"
+    );
+
+  }else{
+
+    message(
+      animal.name+
+      ": Moooo! 🐄"
+    );
   }
 }
 
@@ -1331,114 +1487,79 @@ function petAnimal(animal){
 ========================= */
 
 function openShop(){
+
   document.getElementById("shop").style.display="flex";
 }
 
 function closeShop(){
+
   document.getElementById("shop").style.display="none";
 }
 
 document.getElementById("closeShop").onclick=closeShop;
 
 document.querySelectorAll("[data-buy]").forEach(btn=>{
+
   btn.onclick=()=>{
-    buySeed(btn.dataset.buy);
+
+    const type=btn.dataset.buy;
+
+    const prices={
+      turnip:40,
+      corn:70,
+      pumpkin:100,
+      carrot:55
+    };
+
+    if(money<prices[type]){
+
+      message("💰 Uang tidak cukup.");
+      return;
+    }
+
+    money-=prices[type];
+    inv[type+"Seed"]++;
+
+    updateHUD();
+    save();
+
+    message(
+      "🌱 1 bibit berhasil dibeli."
+    );
   };
 });
-
-function buySeed(type){
-
-  const prices={
-    turnip:40,
-    corn:70,
-    pumpkin:100,
-    carrot:55
-  };
-
-  const price=prices[type];
-
-  if(money<price){
-    showMessage("Uang tidak cukup.");
-    return;
-  }
-
-  money-=price;
-  inventory[type+"Seed"]++;
-
-  updateHUD();
-  saveGame();
-
-  showMessage("Membeli 1 bibit.");
-}
-
-/* =========================
-   SELL
-========================= */
-
-function sellAll(){
-
-  let total=0;
-
-  Object.keys(cropInfo).forEach(type=>{
-    const amount=inventory[type];
-
-    if(amount>0){
-      total+=amount*cropInfo[type].sell;
-      inventory[type]=0;
-    }
-  });
-
-  total+=inventory.egg*80;
-  total+=inventory.milk*150;
-
-  inventory.egg=0;
-  inventory.milk=0;
-
-  if(total<=0){
-    showMessage("Tidak ada hasil panen untuk dijual.");
-    return;
-  }
-
-  money+=total;
-
-  updateHUD();
-  saveGame();
-
-  showMessage("Semua hasil dijual: Rp "+total.toLocaleString("id-ID"));
-}
 
 /* =========================
    HOME
 ========================= */
 
-function restAtHome(){
+function rest(){
 
-  if(
-    Math.abs(player.x-10)<4 &&
-    Math.abs(player.y-17)<5
-  ){
-    player.energy=player.maxEnergy;
+  player.energy=player.maxEnergy;
 
-    advanceDay();
+  advanceDay();
 
-    showMessage("Kamu beristirahat. Hari baru dimulai.");
-  }
+  message(
+    "🏠 Kamu beristirahat. Hari baru dimulai."
+  );
 }
 
 /* =========================
    DAY
 ========================= */
 
-function advanceTime(minutes){
+function advanceTime(m){
 
-  minute+=minutes;
+  minute+=m;
 
   while(minute>=60){
+
     minute-=60;
     hour++;
   }
 
   if(hour>=24){
+
     advanceDay();
   }
 }
@@ -1448,15 +1569,19 @@ function advanceDay(){
   day++;
 
   if(day>28){
+
     day=1;
 
-    const index=seasons.indexOf(season);
+    const i=seasons.indexOf(season);
 
-    if(index===3){
-      season=seasons[0];
+    if(i>=3){
+
+      season="Semi";
       year++;
+
     }else{
-      season=seasons[index+1];
+
+      season=seasons[i+1];
     }
   }
 
@@ -1467,49 +1592,58 @@ function advanceDay(){
 
   randomWeather();
 
-  crops.forEach(crop=>{
-    if(crop.alive){
+  crops.forEach(c=>{
 
-      if(crop.watered){
-        crop.age++;
-      }else{
-        /* tanaman tidak tumbuh kalau tidak disiram */
-      }
+    if(c.watered){
 
-      crop.watered=false;
+      c.age++;
     }
+
+    c.watered=false;
   });
 
   animals.forEach(a=>{
-    a.eggTimer++;
 
-    if(a.type==="chicken" && a.eggTimer>=2){
-      inventory.egg++;
-      a.eggTimer=0;
+    a.timer++;
+
+    if(
+      a.type==="chicken"&&
+      a.timer>=2
+    ){
+
+      inv.egg++;
+      a.timer=0;
     }
 
-    if(a.type==="cow" && a.eggTimer>=3){
-      inventory.milk++;
-      a.eggTimer=0;
+    if(
+      a.type==="cow"&&
+      a.timer>=3
+    ){
+
+      inv.milk++;
+      a.timer=0;
     }
   });
 
-  saveGame();
+  save();
 }
 
 /* =========================
    INVENTORY
 ========================= */
 
-function toggleInventory(){
+function inventoryOpen(){
 
-  const panel=document.getElementById("inventory");
+  const el=document.getElementById("inventory");
 
-  if(panel.style.display==="flex"){
-    panel.style.display="none";
+  if(el.style.display==="flex"){
+
+    el.style.display="none";
+
   }else{
+
     renderInventory();
-    panel.style.display="flex";
+    el.style.display="flex";
   }
 }
 
@@ -1519,7 +1653,7 @@ function renderInventory(){
 
   grid.innerHTML="";
 
-  const items=[
+  const list=[
     ["🌱","Bibit Lobak","turnipSeed"],
     ["🌽","Bibit Jagung","cornSeed"],
     ["🎃","Bibit Labu","pumpkinSeed"],
@@ -1534,32 +1668,80 @@ function renderInventory(){
     ["🪨","Batu","stone"]
   ];
 
-  items.forEach(item=>{
-    const div=document.createElement("div");
-    div.className="item";
+  list.forEach(i=>{
 
-    div.innerHTML=
-      "<div style='font-size:25px'>"+item[0]+"</div>"+
-      "<b>"+item[1]+"</b>"+
-      "<div>Jumlah: "+inventory[item[2]]+"</div>";
+    const d=document.createElement("div");
 
-    grid.appendChild(div);
+    d.className="card";
+
+    d.innerHTML=
+      "<div style='font-size:26px'>"+
+      i[0]+
+      "</div>"+
+      "<b>"+i[1]+"</b>"+
+      "<br>Jumlah: "+
+      inv[i[2]];
+
+    grid.appendChild(d);
   });
-
-  const sell=document.createElement("button");
-  sell.className="close";
-  sell.textContent="💰 JUAL SEMUA HASIL PANEN";
-  sell.onclick=sellAll;
-
-  grid.appendChild(sell);
 }
 
-document.getElementById("inventoryBtn").onclick=toggleInventory;
-document.getElementById("closeInventory").onclick=toggleInventory;
+document.getElementById("inventoryBtn").onclick=inventoryOpen;
 
-function closeAllPanels(){
+document.getElementById("closeInventory").onclick=()=>{
   document.getElementById("inventory").style.display="none";
-  document.getElementById("shop").style.display="none";
+};
+
+/* =========================
+   SELL
+========================= */
+
+document.getElementById("sell").onclick=()=>{
+
+  let total=0;
+
+  Object.keys(cropsData).forEach(type=>{
+
+    total+=
+      inv[type]*
+      cropsData[type].price;
+
+    inv[type]=0;
+  });
+
+  total+=inv.egg*80;
+  total+=inv.milk*150;
+
+  inv.egg=0;
+  inv.milk=0;
+
+  if(total<=0){
+
+    message("Tidak ada hasil untuk dijual.");
+    return;
+  }
+
+  money+=total;
+
+  updateHUD();
+  renderInventory();
+  save();
+
+  message(
+    "💰 Semua hasil terjual: Rp "+
+    total.toLocaleString("id-ID")
+  );
+};
+
+/* =========================
+   PANELS
+========================= */
+
+function closePanels(){
+
+  document
+    .querySelectorAll(".overlay")
+    .forEach(x=>x.style.display="none");
 }
 
 /* =========================
@@ -1575,123 +1757,156 @@ function updateHUD(){
   document.getElementById("season").textContent=season;
   document.getElementById("year").textContent=year;
 
-  const hh=String(hour).padStart(2,"0");
-  const mm=String(minute).padStart(2,"0");
+  document.getElementById("time").textContent=
+    String(hour).padStart(2,"0")+
+    ":"+
+    String(minute).padStart(2,"0");
 
-  document.getElementById("clock").textContent=hh+":"+mm;
-  document.getElementById("weather").textContent=weather;
+  document.getElementById("weather").textContent=
+    weather;
 
-  const percent=
-    Math.max(0,Math.min(100,player.energy/player.maxEnergy*100));
+  document.getElementById("energyBar").style.width=
+    Math.max(
+      0,
+      player.energy/player.maxEnergy*100
+    )+"%";
+}
 
-  document.getElementById("energyBar").style.width=percent+"%";
+/* =====================================================
+   DRAWING
+===================================================== */
+
+function updateCamera(){
+
+  cameraX=
+    player.x*TILE-W/2;
+
+  cameraY=
+    player.y*TILE-H/2;
+
+  cameraX=Math.max(
+    0,
+    Math.min(
+      cameraX,
+      MW*TILE-W
+    )
+  );
+
+  cameraY=Math.max(
+    0,
+    Math.min(
+      cameraY,
+      MH*TILE-H
+    )
+  );
 }
 
 /* =========================
-   DRAW WORLD
+   GROUND
 ========================= */
-
-function camera(){
-
-  world.cameraX=
-    player.x*TILE-W/2;
-
-  world.cameraY=
-    player.y*TILE-H/2;
-
-  world.cameraX=Math.max(0,
-    Math.min(world.cameraX,MAP_W*TILE-W));
-
-  world.cameraY=Math.max(0,
-    Math.min(world.cameraY,MAP_H*TILE-H));
-}
-
-function draw(){
-
-  ctx.clearRect(0,0,W,H);
-
-  camera();
-
-  ctx.save();
-
-  ctx.translate(
-    -world.cameraX,
-    -world.cameraY
-  );
-
-  drawGround();
-  drawCrops();
-  drawObjects();
-  drawAnimals();
-  drawNPCs();
-  drawPlayer();
-
-  ctx.restore();
-
-  drawWeather();
-
-  updateHUD();
-}
 
 function drawGround(){
 
-  const startX=Math.floor(world.cameraX/TILE)-1;
-  const endX=Math.ceil((world.cameraX+W)/TILE)+1;
+  const sx=Math.floor(cameraX/TILE)-1;
+  const ex=Math.ceil((cameraX+W)/TILE)+1;
 
-  const startY=Math.floor(world.cameraY/TILE)-1;
-  const endY=Math.ceil((world.cameraY+H)/TILE)+1;
+  const sy=Math.floor(cameraY/TILE)-1;
+  const ey=Math.ceil((cameraY+H)/TILE)+1;
 
-  for(let y=startY;y<endY;y++){
+  for(let y=sy;y<ey;y++){
 
-    for(let x=startX;x<endX;x++){
+    for(let x=sx;x<ex;x++){
 
-      if(x<0||y<0||x>=MAP_W||y>=MAP_H) continue;
+      if(x<0||y<0||x>=MW||y>=MH)continue;
 
       const type=map[y][x];
 
-      let fill="#7fc66b";
+      let color="#7fc86e";
 
-      if(type==="grass") fill="#7fc66b";
-      if(type==="farm") fill="#78bf64";
-      if(type==="tilled") fill="#8a6844";
-      if(type==="path") fill="#c9ad78";
-      if(type==="water") fill="#5da8d0";
+      if(type==="path")color="#c9ad78";
+      if(type==="farm")color="#79bf67";
+      if(type==="tilled")color="#896442";
+      if(type==="water")color="#58a5d2";
 
-      ctx.fillStyle=fill;
-      ctx.fillRect(x*TILE,y*TILE,TILE,TILE);
+      ctx.fillStyle=color;
+
+      ctx.fillRect(
+        x*TILE,
+        y*TILE,
+        TILE,
+        TILE
+      );
 
       if(type==="grass"){
-        ctx.strokeStyle="rgba(40,100,40,.12)";
+
+        ctx.strokeStyle="rgba(35,90,35,.15)";
+        ctx.lineWidth=1;
+
         ctx.beginPath();
-        ctx.moveTo(x*TILE+8,y*TILE+39);
-        ctx.lineTo(x*TILE+11,y*TILE+32);
-        ctx.moveTo(x*TILE+30,y*TILE+15);
-        ctx.lineTo(x*TILE+33,y*TILE+9);
+
+        ctx.moveTo(
+          x*TILE+8,
+          y*TILE+40
+        );
+
+        ctx.lineTo(
+          x*TILE+11,
+          y*TILE+33
+        );
+
+        ctx.moveTo(
+          x*TILE+35,
+          y*TILE+20
+        );
+
+        ctx.lineTo(
+          x*TILE+38,
+          y*TILE+14
+        );
+
         ctx.stroke();
       }
 
       if(type==="tilled"){
-        ctx.strokeStyle="rgba(50,35,20,.3)";
-        ctx.beginPath();
+
+        ctx.strokeStyle="rgba(55,35,20,.35)";
 
         for(let yy=7;yy<TILE;yy+=10){
-          ctx.moveTo(x*TILE+5,y*TILE+yy);
-          ctx.lineTo(x*TILE+TILE-5,y*TILE+yy);
-        }
 
-        ctx.stroke();
+          ctx.beginPath();
+
+          ctx.moveTo(
+            x*TILE+4,
+            y*TILE+yy
+          );
+
+          ctx.lineTo(
+            x*TILE+44,
+            y*TILE+yy
+          );
+
+          ctx.stroke();
+        }
       }
 
       if(type==="water"){
-        ctx.strokeStyle="rgba(255,255,255,.22)";
+
+        ctx.strokeStyle="rgba(255,255,255,.2)";
+
         ctx.beginPath();
-        ctx.moveTo(x*TILE+6,y*TILE+18);
+
+        ctx.moveTo(
+          x*TILE+5,
+          y*TILE+18
+        );
+
         ctx.quadraticCurveTo(
-          x*TILE+20,
-          y*TILE+12,
-          x*TILE+40,
+          x*TILE+22,
+          y*TILE+11,
+          x*TILE+43,
           y*TILE+19
         );
+
         ctx.stroke();
       }
     }
@@ -1699,137 +1914,213 @@ function drawGround(){
 }
 
 /* =========================
-   BUILDINGS / OBJECTS
+   BUILDINGS
 ========================= */
 
-function drawObjects(){
+function drawBuildings(){
 
   objects.forEach(o=>{
 
-    const px=o.x*TILE;
-    const py=o.y*TILE;
+    if(
+      o.type!=="house"&&
+      o.type!=="shop"&&
+      o.type!=="barn"
+    )return;
 
-    if(o.type==="tree"){
-      drawTree(px+24,py+30);
-    }
+    const x=o.x*TILE;
+    const y=o.y*TILE;
 
-    if(o.type==="stone"){
-      drawStone(px+24,py+32);
-    }
-
-    if(o.type==="house"){
-      drawBuilding(
-        px,
-        py,
-        o.w*TILE,
-        o.h*TILE,
-        "#e7d3ae",
-        "#9e563e",
-        "RUMAH"
-      );
-    }
+    let wall="#e7d0aa";
+    let roof="#9e5540";
+    let title="RUMAH";
 
     if(o.type==="shop"){
-      drawBuilding(
-        px,
-        py,
-        o.w*TILE,
-        o.h*TILE,
-        "#e7b85b",
-        "#9b4f39",
-        "TOKO"
-      );
+
+      wall="#e4b85c";
+      roof="#8e4937";
+      title="TOKO";
     }
 
     if(o.type==="barn"){
-      drawBuilding(
-        px,
-        py,
-        o.w*TILE,
-        o.h*TILE,
-        "#c98357",
-        "#75402f",
-        "KANDANG"
+
+      wall="#c67b52";
+      roof="#713e30";
+      title="KANDANG";
+    }
+
+    ctx.fillStyle="rgba(0,0,0,.16)";
+    ctx.fillRect(
+      x+7,
+      y+9,
+      o.w*TILE,
+      o.h*TILE
+    );
+
+    ctx.fillStyle=wall;
+
+    ctx.fillRect(
+      x,
+      y+20,
+      o.w*TILE,
+      o.h*TILE-20
+    );
+
+    ctx.fillStyle=roof;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      x-10,
+      y+27
+    );
+
+    ctx.lineTo(
+      x+o.w*TILE/2,
+      y-20
+    );
+
+    ctx.lineTo(
+      x+o.w*TILE+10,
+      y+27
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.fillStyle="#503326";
+
+    ctx.fillRect(
+      x+o.w*TILE/2-19,
+      y+o.h*TILE-58,
+      38,
+      58
+    );
+
+    ctx.fillStyle="#fff";
+
+    ctx.font="bold 12px Arial";
+    ctx.textAlign="center";
+
+    ctx.fillText(
+      title,
+      x+o.w*TILE/2,
+      y+43
+    );
+  });
+}
+
+/* =========================
+   TREES & STONES
+========================= */
+
+function drawResources(){
+
+  objects.forEach(o=>{
+
+    if(o.type==="tree"){
+
+      const x=o.x*TILE+24;
+      const y=o.y*TILE+30;
+
+      ctx.fillStyle="rgba(0,0,0,.17)";
+      ctx.beginPath();
+      ctx.ellipse(
+        x,
+        y+15,
+        20,
+        7,
+        0,
+        0,
+        Math.PI*2
       );
+      ctx.fill();
+
+      ctx.fillStyle="#69462b";
+      ctx.fillRect(
+        x-7,
+        y-3,
+        14,
+        29
+      );
+
+      ctx.fillStyle="#275f35";
+
+      ctx.beginPath();
+      ctx.arc(
+        x,
+        y-15,
+        25,
+        0,
+        Math.PI*2
+      );
+      ctx.fill();
+
+      ctx.fillStyle="#347a43";
+
+      ctx.beginPath();
+      ctx.arc(
+        x-17,
+        y-5,
+        18,
+        0,
+        Math.PI*2
+      );
+
+      ctx.arc(
+        x+17,
+        y-5,
+        18,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+    }
+
+    if(o.type==="stone"){
+
+      const x=o.x*TILE+24;
+      const y=o.y*TILE+33;
+
+      ctx.fillStyle="rgba(0,0,0,.18)";
+
+      ctx.beginPath();
+
+      ctx.ellipse(
+        x,
+        y+7,
+        19,
+        7,
+        0,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      ctx.fillStyle="#727978";
+
+      ctx.beginPath();
+
+      ctx.moveTo(x-18,y+5);
+      ctx.lineTo(x-11,y-13);
+      ctx.lineTo(x+7,y-19);
+      ctx.lineTo(x+19,y-3);
+      ctx.lineTo(x+12,y+13);
+      ctx.lineTo(x-8,y+16);
+      ctx.closePath();
+
+      ctx.fill();
+
+      ctx.fillStyle="rgba(255,255,255,.25)";
+      ctx.fillRect(x-8,y-9,9,4);
     }
   });
 }
 
-function drawBuilding(x,y,w,h,wall,roof,label){
-
-  ctx.fillStyle="rgba(0,0,0,.15)";
-  ctx.fillRect(x+5,y+7,w,h);
-
-  ctx.fillStyle=wall;
-  ctx.fillRect(x,y+20,w,h-20);
-
-  ctx.fillStyle=roof;
-
-  ctx.beginPath();
-  ctx.moveTo(x-10,y+25);
-  ctx.lineTo(x+w/2,y-18);
-  ctx.lineTo(x+w+10,y+25);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle="#53392c";
-  ctx.fillRect(x+w/2-18,y+h-58,36,58);
-
-  ctx.fillStyle="rgba(255,255,255,.8)";
-  ctx.font="bold 12px Arial";
-  ctx.textAlign="center";
-  ctx.fillText(label,x+w/2,y+42);
-}
-
-function drawTree(x,y){
-
-  ctx.fillStyle="rgba(0,0,0,.15)";
-  ctx.beginPath();
-  ctx.ellipse(x,y+15,20,8,0,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle="#70482d";
-  ctx.fillRect(x-7,y-2,14,28);
-
-  ctx.fillStyle="#245d35";
-
-  ctx.beginPath();
-  ctx.arc(x,y-15,25,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle="#367845";
-
-  ctx.beginPath();
-  ctx.arc(x-17,y-5,18,0,Math.PI*2);
-  ctx.arc(x+17,y-5,18,0,Math.PI*2);
-  ctx.fill();
-}
-
-function drawStone(x,y){
-
-  ctx.fillStyle="rgba(0,0,0,.15)";
-  ctx.beginPath();
-  ctx.ellipse(x,y+8,20,8,0,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.fillStyle="#727978";
-
-  ctx.beginPath();
-  ctx.moveTo(x-18,y+5);
-  ctx.lineTo(x-10,y-15);
-  ctx.lineTo(x+7,y-20);
-  ctx.lineTo(x+20,y-3);
-  ctx.lineTo(x+13,y+14);
-  ctx.lineTo(x-8,y+17);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle="rgba(255,255,255,.2)";
-  ctx.fillRect(x-7,y-10,9,5);
-}
-
 /* =========================
-   CROPS DRAW
+   CROPS
 ========================= */
 
 function drawCrops(){
@@ -1837,222 +2128,512 @@ function drawCrops(){
   crops.forEach(c=>{
 
     const x=c.x*TILE+24;
-    const y=c.y*TILE+24;
+    const y=c.y*TILE+25;
 
-    const info=cropInfo[c.type];
+    const info=cropsData[c.type];
 
-    ctx.fillStyle="#493522";
-    ctx.fillRect(x-3,y+11,6,8);
+    const grow=Math.min(
+      1,
+      c.age/info.days
+    );
 
-    const growth=
-      Math.min(1,c.age/info.days);
+    ctx.fillStyle="#4a3520";
+    ctx.fillRect(
+      x-3,
+      y+8,
+      6,
+      12
+    );
 
-    if(growth<.34){
+    if(grow<.34){
 
-      ctx.strokeStyle="#3d873b";
+      ctx.strokeStyle="#3d853e";
       ctx.lineWidth=3;
 
       ctx.beginPath();
+
       ctx.moveTo(x,y+12);
-      ctx.lineTo(x,y-3);
-      ctx.moveTo(x,y+1);
-      ctx.lineTo(x-8,y-5);
-      ctx.moveTo(x,y-1);
-      ctx.lineTo(x+8,y-6);
+      ctx.lineTo(x,y-5);
+
+      ctx.moveTo(x,y);
+      ctx.lineTo(x-8,y-6);
+
+      ctx.moveTo(x,y-2);
+      ctx.lineTo(x+8,y-7);
+
       ctx.stroke();
 
-    }else if(growth<.75){
+    }else if(grow<.75){
 
-      ctx.fillStyle="#34823d";
+      ctx.fillStyle="#368342";
 
       ctx.beginPath();
-      ctx.ellipse(x-8,y,9,17,-.5,0,Math.PI*2);
-      ctx.ellipse(x+8,y,9,17,.5,0,Math.PI*2);
-      ctx.fill();
 
-      ctx.fillStyle="#4c9a42";
-      ctx.fillRect(x-3,y-15,6,25);
+      ctx.ellipse(
+        x-8,
+        y,
+        9,
+        17,
+        -.5,
+        0,
+        Math.PI*2
+      );
+
+      ctx.ellipse(
+        x+8,
+        y,
+        9,
+        17,
+        .5,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
 
     }else{
 
-      ctx.fillStyle="#31753a";
+      ctx.fillStyle="#2d7137";
 
       ctx.beginPath();
-      ctx.ellipse(x-11,y,11,19,-.5,0,Math.PI*2);
-      ctx.ellipse(x+11,y,11,19,.5,0,Math.PI*2);
+
+      ctx.ellipse(
+        x-11,
+        y,
+        11,
+        19,
+        -.5,
+        0,
+        Math.PI*2
+      );
+
+      ctx.ellipse(
+        x+11,
+        y,
+        11,
+        19,
+        .5,
+        0,
+        Math.PI*2
+      );
+
       ctx.fill();
 
-      ctx.fillStyle="#d7c84c";
-
       if(c.type==="pumpkin"){
-        ctx.fillStyle="#e67e36";
+
+        ctx.fillStyle="#e57b35";
+
         ctx.beginPath();
-        ctx.arc(x,y+2,12,0,Math.PI*2);
+
+        ctx.arc(
+          x,
+          y+3,
+          12,
+          0,
+          Math.PI*2
+        );
+
         ctx.fill();
-      }
 
-      if(c.type==="corn"){
-        ctx.fillStyle="#efcf4e";
-        ctx.fillRect(x-7,y-8,14,21);
-      }
+      }else if(c.type==="corn"){
 
-      if(c.type==="turnip" || c.type==="carrot"){
-        ctx.fillStyle="#e7a24e";
+        ctx.fillStyle="#e5c847";
+
+        ctx.fillRect(
+          x-7,
+          y-9,
+          14,
+          22
+        );
+
+      }else{
+
+        ctx.fillStyle="#e19b48";
+
         ctx.beginPath();
-        ctx.arc(x,y+8,8,0,Math.PI*2);
+
+        ctx.arc(
+          x,
+          y+8,
+          8,
+          0,
+          Math.PI*2
+        );
+
         ctx.fill();
       }
     }
 
     if(c.watered){
-      ctx.fillStyle="#7fc9ed";
+
+      ctx.fillStyle="#74c8ee";
+
       ctx.beginPath();
-      ctx.arc(x+15,y-15,4,0,Math.PI*2);
+
+      ctx.arc(
+        x+14,
+        y-15,
+        4,
+        0,
+        Math.PI*2
+      );
+
       ctx.fill();
     }
   });
 }
 
 /* =========================
-   HUMAN CHARACTER
+   HUMAN
 ========================= */
 
-function drawHuman(x,y,opt){
+function drawCharacter(x,y,opt,isPlayer=false){
 
   const px=x*TILE+24;
-  const py=y*TILE+28;
+  const py=y*TILE+29;
 
-  const skin=opt.skin;
-  const hair=opt.hair;
-  const shirt=opt.shirt;
-  const pants=opt.pants;
-  const hat=opt.hat;
+  const step=
+    isPlayer&&player.moving
+    ? Math.sin(player.anim)*3
+    : 0;
 
   /* shadow */
+
   ctx.fillStyle="rgba(0,0,0,.2)";
+
   ctx.beginPath();
-  ctx.ellipse(px,py+17,17,7,0,0,Math.PI*2);
+
+  ctx.ellipse(
+    px,
+    py+22,
+    17,
+    7,
+    0,
+    0,
+    Math.PI*2
+  );
+
   ctx.fill();
 
-  /* legs */
-  ctx.fillStyle=pants;
+  /* back leg */
 
-  ctx.fillRect(px-11,py+7,9,20);
-  ctx.fillRect(px+2,py+7,9,20);
+  ctx.fillStyle=opt.pants;
+
+  ctx.fillRect(
+    px-10,
+    py+6,
+    9,
+    20+step
+  );
+
+  ctx.fillRect(
+    px+2,
+    py+6,
+    9,
+    20-step
+  );
 
   /* shoes */
-  ctx.fillStyle="#33271f";
-  ctx.fillRect(px-13,py+24,12,6);
-  ctx.fillRect(px+2,py+24,12,6);
+
+  ctx.fillStyle="#352a23";
+
+  ctx.fillRect(
+    px-13,
+    py+24+step,
+    12,
+    6
+  );
+
+  ctx.fillRect(
+    px+2,
+    py+24-step,
+    12,
+    6
+  );
 
   /* body */
-  ctx.fillStyle=shirt;
+
+  ctx.fillStyle=opt.shirt;
+
   ctx.beginPath();
-  ctx.roundRect(px-15,py-15,30,28,8);
+
+  ctx.roundRect(
+    px-15,
+    py-16,
+    30,
+    28,
+    8
+  );
+
   ctx.fill();
 
+  /* collar */
+
+  ctx.fillStyle=opt.skin;
+
+  ctx.fillRect(
+    px-5,
+    py-21,
+    10,
+    7
+  );
+
   /* arms */
-  ctx.fillStyle=skin;
-  ctx.fillRect(px-20,py-9,7,20);
-  ctx.fillRect(px+13,py-9,7,20);
 
-  /* neck */
-  ctx.fillStyle=skin;
-  ctx.fillRect(px-5,py-20,10,8);
+  ctx.fillStyle=opt.skin;
 
-  /* head */
-  ctx.fillStyle=skin;
+  ctx.fillRect(
+    px-21,
+    py-10,
+    7,
+    20
+  );
+
+  ctx.fillRect(
+    px+14,
+    py-10,
+    7,
+    20
+  );
+
+  /* hands */
+
   ctx.beginPath();
-  ctx.arc(px,py-29,16,0,Math.PI*2);
+
+  ctx.arc(
+    px-17,
+    py+10,
+    4,
+    0,
+    Math.PI*2
+  );
+
+  ctx.arc(
+    px+17,
+    py+10,
+    4,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  /* neck/head */
+
+  ctx.fillStyle=opt.skin;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    px,
+    py-31,
+    16,
+    0,
+    Math.PI*2
+  );
+
   ctx.fill();
 
   /* ears */
+
   ctx.beginPath();
-  ctx.arc(px-15,py-29,4,0,Math.PI*2);
-  ctx.arc(px+15,py-29,4,0,Math.PI*2);
+
+  ctx.arc(
+    px-15,
+    py-31,
+    4,
+    0,
+    Math.PI*2
+  );
+
+  ctx.arc(
+    px+15,
+    py-31,
+    4,
+    0,
+    Math.PI*2
+  );
+
   ctx.fill();
 
   /* hair */
-  ctx.fillStyle=hair;
+
+  ctx.fillStyle=opt.hair;
 
   ctx.beginPath();
-  ctx.arc(px,py-34,17,Math.PI,Math.PI*2);
+
+  ctx.arc(
+    px,
+    py-37,
+    17,
+    Math.PI,
+    Math.PI*2
+  );
+
   ctx.fill();
 
-  ctx.fillRect(px-16,py-37,32,8);
+  ctx.fillRect(
+    px-16,
+    py-39,
+    32,
+    9
+  );
 
   /* eyes */
+
   ctx.fillStyle="#171717";
+
   ctx.beginPath();
-  ctx.arc(px-6,py-29,2,0,Math.PI*2);
-  ctx.arc(px+6,py-29,2,0,Math.PI*2);
+
+  ctx.arc(
+    px-6,
+    py-31,
+    2,
+    0,
+    Math.PI*2
+  );
+
+  ctx.arc(
+    px+6,
+    py-31,
+    2,
+    0,
+    Math.PI*2
+  );
+
   ctx.fill();
 
-  /* nose */
-  ctx.strokeStyle="#925f46";
+  /* eyebrows */
+
+  ctx.strokeStyle="#4b3024";
   ctx.lineWidth=1.5;
+
   ctx.beginPath();
-  ctx.moveTo(px,py-27);
-  ctx.lineTo(px+2,py-24);
+
+  ctx.moveTo(px-9,py-36);
+  ctx.lineTo(px-3,py-37);
+
+  ctx.moveTo(px+3,py-37);
+  ctx.lineTo(px+9,py-36);
+
+  ctx.stroke();
+
+  /* nose */
+
+  ctx.strokeStyle="#915e47";
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    px,
+    py-29
+  );
+
+  ctx.lineTo(
+    px+2,
+    py-25
+  );
+
   ctx.stroke();
 
   /* mouth */
+
   ctx.beginPath();
-  ctx.arc(px,py-22,4,0,Math.PI);
-  ctx.stroke();
 
-  /* farmer hat */
-  if(hat){
-
-    ctx.fillStyle="#d6ad49";
-
-    ctx.beginPath();
-    ctx.ellipse(px,py-46,23,7,0,0,Math.PI*2);
-    ctx.fill();
-
-    ctx.fillRect(px-12,py-56,24,12);
-
-    ctx.fillStyle="#8b6830";
-    ctx.fillRect(px-12,py-47,24,4);
-  }
-}
-
-function drawPlayer(){
-
-  drawHuman(
-    player.x,
-    player.y,
-    {
-      skin:"#c88762",
-      hair:"#3a2419",
-      shirt:"#4e914d",
-      pants:"#4f6072",
-      hat:true
-    }
+  ctx.arc(
+    px,
+    py-23,
+    4,
+    0,
+    Math.PI
   );
 
+  ctx.stroke();
+
+  /* hat */
+
+  if(opt.hat){
+
+    ctx.fillStyle="#d6ac48";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      px,
+      py-47,
+      24,
+      7,
+      0,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillRect(
+      px-12,
+      py-57,
+      24,
+      13
+    );
+
+    ctx.fillStyle="#8d6830";
+
+    ctx.fillRect(
+      px-12,
+      py-48,
+      24,
+      4
+    );
+  }
+
+  /* name */
+
   ctx.fillStyle="#fff";
-  ctx.font="bold 11px Arial";
+  ctx.font="bold 10px Arial";
   ctx.textAlign="center";
+
   ctx.fillText(
-    player.name,
-    player.x*TILE+24,
-    player.y*TILE-29
+    opt.name,
+    px,
+    py-56
   );
 }
 
 /* =========================
-   NPC DRAW
+   PLAYER
 ========================= */
 
-function drawNPCs(){
+function drawPlayer(){
+
+  drawCharacter(
+    player.x,
+    player.y,
+    {
+      name:"RAKA",
+      skin:"#c88762",
+      hair:"#392319",
+      shirt:"#4c934d",
+      pants:"#536373",
+      hat:true
+    },
+    true
+  );
+}
+
+/* =========================
+   NPC
+========================= */
+
+function drawNPC(){
 
   npcs.forEach(n=>{
 
-    drawHuman(
+    drawCharacter(
       n.x,
       n.y,
       {
+        name:n.name,
         skin:n.skin,
         hair:n.hair,
         shirt:n.shirt,
@@ -2060,20 +2641,11 @@ function drawNPCs(){
         hat:false
       }
     );
-
-    ctx.fillStyle="#fff";
-    ctx.font="bold 10px Arial";
-    ctx.textAlign="center";
-    ctx.fillText(
-      n.name,
-      n.x*TILE+24,
-      n.y*TILE-29
-    );
   });
 }
 
 /* =========================
-   ANIMAL DRAW
+   ANIMALS
 ========================= */
 
 function drawAnimals(){
@@ -2081,199 +2653,285 @@ function drawAnimals(){
   animals.forEach(a=>{
 
     const x=a.x*TILE+24;
-    const y=a.y*TILE+30;
+    const y=a.y*TILE+31;
 
-    ctx.fillStyle="rgba(0,0,0,.15)";
+    ctx.fillStyle="rgba(0,0,0,.18)";
+
     ctx.beginPath();
-    ctx.ellipse(x,y+8,18,6,0,0,Math.PI*2);
+
+    ctx.ellipse(
+      x,
+      y+9,
+      18,
+      6,
+      0,
+      0,
+      Math.PI*2
+    );
+
     ctx.fill();
 
     if(a.type==="chicken"){
 
-      ctx.fillStyle="#f5f0dc";
+      ctx.fillStyle="#f3edda";
 
       ctx.beginPath();
-      ctx.ellipse(x,y,17,13,0,0,Math.PI*2);
+
+      ctx.ellipse(
+        x,
+        y,
+        17,
+        13,
+        0,
+        0,
+        Math.PI*2
+      );
+
       ctx.fill();
-
-      ctx.fillStyle="#fff";
-      ctx.beginPath();
-      ctx.arc(x+12,y-8,9,0,Math.PI*2);
-      ctx.fill();
-
-      ctx.fillStyle="#d94e3d";
-      ctx.beginPath();
-      ctx.arc(x+16,y-15,4,0,Math.PI*2);
-      ctx.fill();
-
-      ctx.fillStyle="#171717";
-      ctx.beginPath();
-      ctx.arc(x+15,y-10,2,0,Math.PI*2);
-      ctx.fill();
-
-      ctx.fillStyle="#e5b44b";
-      ctx.beginPath();
-      ctx.moveTo(x+21,y-7);
-      ctx.lineTo(x+29,y-4);
-      ctx.lineTo(x+21,y);
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    if(a.type==="cow"){
-
-      ctx.fillStyle="#eee9d9";
 
       ctx.beginPath();
-      ctx.ellipse(x,y,25,15,0,0,Math.PI*2);
+
+      ctx.arc(
+        x+13,
+        y-9,
+        9,
+        0,
+        Math.PI*2
+      );
+
       ctx.fill();
 
-      ctx.fillStyle="#704d3a";
+      ctx.fillStyle="#d64e3f";
+
       ctx.beginPath();
-      ctx.arc(x+20,y-7,13,0,Math.PI*2);
+
+      ctx.arc(
+        x+14,
+        y-17,
+        4,
+        0,
+        Math.PI*2
+      );
+
       ctx.fill();
 
-      ctx.fillStyle="#201b18";
+      ctx.fillStyle="#222";
+
       ctx.beginPath();
-      ctx.arc(x+24,y-9,2,0,Math.PI*2);
+
+      ctx.arc(
+        x+16,
+        y-10,
+        2,
+        0,
+        Math.PI*2
+      );
+
       ctx.fill();
 
-      ctx.fillStyle="#33271f";
-      ctx.fillRect(x-16,y+10,6,14);
-      ctx.fillRect(x+10,y+10,6,14);
+    }else{
+
+      ctx.fillStyle="#eee8d7";
+
+      ctx.beginPath();
+
+      ctx.ellipse(
+        x,
+        y,
+        25,
+        15,
+        0,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      ctx.fillStyle="#70503c";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x+21,
+        y-8,
+        13,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
+
+      ctx.fillStyle="#222";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x+25,
+        y-10,
+        2,
+        0,
+        Math.PI*2
+      );
+
+      ctx.fill();
     }
 
     ctx.fillStyle="#fff";
     ctx.font="10px Arial";
     ctx.textAlign="center";
-    ctx.fillText(a.name,x,y-22);
+
+    ctx.fillText(
+      a.name,
+      x,
+      y-24
+    );
   });
 }
 
 /* =========================
-   WEATHER / DAY-NIGHT
+   WEATHER
 ========================= */
 
 function drawWeather(){
 
   if(weather==="Hujan"){
 
-    ctx.strokeStyle="rgba(180,220,255,.45)";
+    ctx.strokeStyle="rgba(180,220,255,.5)";
     ctx.lineWidth=1;
 
-    for(let i=0;i<150;i++){
+    const t=performance.now()/4;
 
-      const x=(i*83+performance.now()/5)%W;
-      const y=(i*47+performance.now()/2)%H;
+    for(let i=0;i<170;i++){
+
+      const x=(i*83+t)%W;
+      const y=(i*47+t*1.7)%H;
 
       ctx.beginPath();
-      ctx.moveTo(x,y);
-      ctx.lineTo(x-5,y+13);
+
+      ctx.moveTo(
+        x,
+        y
+      );
+
+      ctx.lineTo(
+        x-5,
+        y+14
+      );
+
       ctx.stroke();
     }
   }
 
-  if(hour>=19 || hour<6){
+  if(hour>=19||hour<6){
 
-    const darkness=
-      hour>=19
-      ? Math.min(.58,(hour-18)*.1)
-      : .45;
-
-    ctx.fillStyle="rgba(8,16,28,"+darkness+")";
-    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle="rgba(7,13,25,.48)";
+    ctx.fillRect(
+      0,
+      0,
+      W,
+      H
+    );
   }
 }
 
 /* =========================
-   GAME LOOP
+   RENDER
 ========================= */
 
+function render(){
+
+  ctx.clearRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+  updateCamera();
+
+  ctx.save();
+
+  ctx.translate(
+    -cameraX,
+    -cameraY
+  );
+
+  drawGround();
+  drawBuildings();
+  drawCrops();
+  drawResources();
+  drawAnimals();
+  drawNPC();
+  drawPlayer();
+
+  ctx.restore();
+
+  drawWeather();
+}
+
+/* =========================
+   GAME UPDATE
+========================= */
+
+let running=false;
 let last=performance.now();
-let timeAccumulator=0;
+let clockCounter=0;
 
 function update(dt){
 
-  if(!world.running) return;
+  if(!running)return;
 
   let dx=0;
   let dy=0;
 
-  if(keys["w"]||keys["arrowup"]) dy=-1;
-  if(keys["s"]||keys["arrowdown"]) dy=1;
-  if(keys["a"]||keys["arrowleft"]) dx=-1;
-  if(keys["d"]||keys["arrowright"]) dx=1;
+  if(keys["w"]||keys["arrowup"])dy=-1;
+  if(keys["s"]||keys["arrowdown"])dy=1;
+  if(keys["a"]||keys["arrowleft"])dx=-1;
+  if(keys["d"]||keys["arrowright"])dx=1;
 
   if(dx!==0||dy!==0){
 
-    player.moving=true;
+    if(dx!==0&&dy!==0){
 
-    if(dx!==0 && dy!==0){
       dx*=.707;
       dy*=.707;
     }
 
-    move(dx*player.speed*dt,dy*player.speed*dt);
+    move(
+      dx*2.7*dt,
+      dy*2.7*dt
+    );
 
-    timeAccumulator+=dt;
+    clockCounter+=dt;
 
-    if(timeAccumulator>.5){
-      advanceTime(1);
-      timeAccumulator=0;
+    if(clockCounter>=1){
+
+      advanceTime(2);
+      clockCounter=0;
     }
 
   }else{
+
     player.moving=false;
   }
-
-  /* NPC simple movement */
-  npcs.forEach(n=>{
-    if(Math.random()<.002){
-
-      const dirs=[
-        [1,0],[-1,0],[0,1],[0,-1]
-      ];
-
-      const d=dirs[Math.floor(Math.random()*dirs.length)];
-
-      const nx=Math.round(n.x+d[0]);
-      const ny=Math.round(n.y+d[1]);
-
-      if(!blocked(nx,ny)){
-        n.x=nx;
-        n.y=ny;
-      }
-    }
-  });
-
-  /* animals wander */
-  animals.forEach(a=>{
-    if(Math.random()<.0015){
-
-      const dirs=[
-        [1,0],[-1,0],[0,1],[0,-1]
-      ];
-
-      const d=dirs[Math.floor(Math.random()*dirs.length)];
-
-      const nx=Math.round(a.x+d[0]);
-      const ny=Math.round(a.y+d[1]);
-
-      if(!blocked(nx,ny)){
-        a.x=nx;
-        a.y=ny;
-      }
-    }
-  });
 }
+
+/* =========================
+   LOOP
+========================= */
 
 function loop(now){
 
-  const dt=Math.min(.05,(now-last)/1000);
+  const dt=Math.min(
+    .05,
+    (now-last)/1000
+  );
+
   last=now;
 
   update(dt);
-  draw();
+  render();
+  updateHUD();
 
   requestAnimationFrame(loop);
 }
@@ -2281,34 +2939,142 @@ function loop(now){
 requestAnimationFrame(loop);
 
 /* =========================
-   MENU
+   START
 ========================= */
 
-document.getElementById("newGame").onclick=()=>{
-  startGame(true);
-};
+function startNew(){
 
-document.getElementById("continueGame").onclick=()=>{
-  if(loadGame()){
-    startGame(false);
+  player.x=8;
+  player.y=14;
+  player.dir="down";
+  player.energy=100;
+  player.selectedSeed="turnip";
+
+  money=1500;
+
+  Object.keys(inv).forEach(k=>{
+    inv[k]=0;
+  });
+
+  inv.turnipSeed=5;
+  inv.cornSeed=3;
+  inv.pumpkinSeed=2;
+  inv.carrotSeed=3;
+
+  crops.length=0;
+
+  day=1;
+  season="Semi";
+  year=1;
+  hour=6;
+  minute=0;
+
+  randomWeather();
+
+  save();
+
+  start();
+}
+
+function start(){
+
+  running=true;
+
+  document.getElementById(
+    "menu"
+  ).style.display="none";
+
+  updateHUD();
+
+  message(
+    "🌱 Selamat datang di ALFA FARM LIFE!"
+  );
+}
+
+document.getElementById("newGame").onclick=startNew;
+
+document.getElementById("continue").onclick=()=>{
+
+  if(load()){
+
+    start();
+
+    message(
+      "💾 Save berhasil dimuat."
+    );
+
   }else{
-    startGame(true);
+
+    startNew();
   }
 };
+
+/* =========================
+   MOBILE CONTROLS
+========================= */
+
+function mobileButton(id,dx,dy){
+
+  const b=document.getElementById(id);
+
+  let timer;
+
+  const down=e=>{
+
+    e.preventDefault();
+
+    move(dx,dy);
+
+    timer=setInterval(
+      ()=>move(dx,dy),
+      70
+    );
+  };
+
+  const up=()=>{
+
+    clearInterval(timer);
+  };
+
+  b.addEventListener(
+    "pointerdown",
+    down
+  );
+
+  b.addEventListener(
+    "pointerup",
+    up
+  );
+
+  b.addEventListener(
+    "pointerleave",
+    up
+  );
+
+  b.addEventListener(
+    "pointercancel",
+    up
+  );
+}
+
+mobileButton("u",0,-1);
+mobileButton("d",0,1);
+mobileButton("l",-1,0);
+mobileButton("r",1,0);
+
+document.getElementById("action").onclick=action;
 
 /* =========================
    AUTOSAVE
 ========================= */
 
 setInterval(()=>{
-  if(world.running){
-    saveGame();
-  }
-},15000);
 
-/* =========================
-   INITIAL
-========================= */
+  if(running){
+    save();
+  }
+
+},15000);
 
 updateHUD();
 
